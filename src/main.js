@@ -12,6 +12,10 @@ axios.defaults.baseURL = "";//设置全局api host
 // 规范:如果要给Vue的原型加属性，名字前面加$，方便让人区分是vue实例自己的属性还是原型的属性
 Vue.prototype.$axios = axios;
 
+//到入elem
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+Vue.use(ElementUI);
 
 console.log(router)
 
