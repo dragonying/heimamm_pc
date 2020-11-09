@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
-import router from './router/index'
+// import router from './router/index'
+import router from '@/router/index' //@符号表示/src的绝对路径  html也是@，js也是@,css ~@
 
 Vue.config.productionTip = false
 //引入axios

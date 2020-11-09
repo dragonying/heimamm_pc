@@ -1,3 +1,4 @@
+//自定义路由模块，并暴露
 import Vue from 'vue'
 //引入路由
 import VueRouter from 'vue-router';
