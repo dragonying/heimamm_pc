@@ -3,9 +3,9 @@
     <img alt="Vue logo" src="./assets/logo.png">
     <div>hello world</div>
     <router-link to="/"></router-link>
-    <el-carousel indicator-position="outside">
-        <el-carousel-item v-for="item in 4" :key="item">
-            <h3>{{ item }}</h3>
+    <el-carousel :interval="interval" indicator-position=" outside">
+        <el-carousel-item v-for="item in 100" :key="item">
+            <img :src="item | picUrl" />
         </el-carousel-item>
     </el-carousel>
 </div>
@@ -14,6 +14,16 @@
 <script>
 export default {
     name: 'App',
+    data() {
+        return {
+            interval: 1000,
+        }
+    },
+    filters: {
+        picUrl: function (num) {
+            return `https://game.gtimg.cn/images/lol/act/img/skin/big${1000+num}.jpg`;
+        }
+    },
     components: {}
 }
 </script>
@@ -33,7 +43,7 @@ export default {
         font-weight: 700;
     }
 
-    .el-carousel__item h3 {
+    .el-carousel__item img {
         color: #475669;
         font-size: 18px;
         opacity: 0.75;
