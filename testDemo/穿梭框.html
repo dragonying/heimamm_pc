@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+</head>
+
+<body>
+    <div id='app'>
+        <el-transfer v-model="value" :data="data"></el-transfer>
+    </div>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                data: (_ => {
+                    const data = [];
+                    for (let i = 1; i <= 15; i++) {
+                        data.push({
+                            key: i,
+                            label: `备选项 ${i}`,
+                            disabled: i % 4 === 0
+                        });
+                    }
+                    return data;
+                })(),
+                value: [1, 4]
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
+
+//将路由抽离
 // import router from './router/index'
 import router from '@/router/index' //@符号表示/src的绝对路径  html也是@，js也是@,css ~@
 
@@ -12,12 +14,15 @@ axios.defaults.baseURL = "";//设置全局api host
 // 规范:如果要给Vue的原型加属性，名字前面加$，方便让人区分是vue实例自己的属性还是原型的属性
 Vue.prototype.$axios = axios;
 
+//引入全局样式
+import '@/assets/css/base.css'
+
 //到入elem
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 Vue.use(ElementUI);
 
-console.log(router)
+// console.log(router)
 
 new Vue({
   router: router,
