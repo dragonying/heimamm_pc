@@ -40,22 +40,30 @@
                 <el-button type="primary" class='login-btn' @click.stop.prevent="onLogin">登录</el-button>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" class='register-btn' @click="onRegister">注册</el-button>
+                <el-button type="primary" class='register-btn' @click="showRegDialog">注册</el-button>
             </el-form-item>
         </el-form>
     </div>
     <div class='right'>
         <img src="@/assets/images/login_banner_ele.png" />
     </div>
+
+    <!--注册表单-->
+    <regComponent ref="regComp"></regComponent>
 </div>
 </template>
 
 <script>
 import {userLogin,pinCode} from '@/api/login'
+import regComponent from '@/views/login/reg'
 import token from '@/utils/token'
 
 export default {
     name: 'login',
+    //组件
+    components:{
+        regComponent,//注册组件
+    },
     data() {
         //自定义验证
        let checkIsAgree=(rule,value,callback)=>{
@@ -113,12 +121,14 @@ export default {
                 
             });
         },
-        onRegister() {
-            console.log('注册!');
-        },
         //刷新验证码
         refreshCode(){
             this.codePic = pinCode();
+        },
+        //注册对话框
+        showRegDialog(){
+            //获取组件，并给其属性赋值
+            this.$refs.regComp.regDialogShow = true;
         }
     },
     beforeCreate() {
