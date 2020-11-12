@@ -37,10 +37,10 @@
                 <el-link href='#' type="primary">隐私条款</el-link>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" class='login-btn' @click.stop.prevent="onLogin()">登录</el-button>
+                <el-button type="primary" class='login-btn' @click.stop.prevent="onLogin">登录</el-button>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" class='register-btn' @click="onRegister()">注册</el-button>
+                <el-button type="primary" class='register-btn' @click="onRegister">注册</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -62,9 +62,9 @@ export default {
                      return callback(new Error(rule.message));
                 }
                 return callback();
-            }
+            };
         return {
-            codePic:'',
+            codePic:pinCode(),
             form: {
                 phone: process.env.VUE_APP_TEST_ACCOUNT,
                 password: process.env.VUE_APP_TEST_PASSWORD,
@@ -113,10 +113,7 @@ export default {
         refreshCode(){
             this.codePic = pinCode();
         }
-    },
-    mounted() {
-        this.refreshCode();
-    },
+    }
 }
 </script>
 

@@ -7,10 +7,12 @@ const instance = axios.create({
   withCredentials: true, //配置接收cookie
 });
 
+//登录方法
 export function userLogin(data = {}) {
   return instance.post('/login', data);
 }
 
+//验证码方法
 export function pinCode() {
-  return process.env.VUE_APP_BASEURL + '/captcha?type=sendsms&v=' + Math.random();
+  return process.env.VUE_APP_BASEURL + '/captcha?type=login&' + Date.now();
 }
