@@ -107,13 +107,9 @@ export default {
             this.$refs.form.validate(valid=>{
                 if(valid){
                    userLogin(this.form,res=>{
-                    if(res.code == 200){
-                        this.$message.success('登录成功');
-                        token.setToken(res.data.token)
-                        this.$router.push('/index')
-                    }else{
-                        this.$message.error(res.message);
-                    }
+                       this.$message.success('登录成功');
+                       token.setToken(res.token)
+                       this.$router.push('/index')
                    })
                 }else{
                     this.$message.warning('请输入正确的信息！');
@@ -224,7 +220,6 @@ export default {
         width: 100%;
         height: 40px;
         vertical-align: middle;
-        border:1px dashed #666666;
     }
 
 }

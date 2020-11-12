@@ -1,23 +1,13 @@
-//引入axios
-import axios from 'axios'
+import request from '@/api/request.js';
 
-
-// 相当于axios副本
-const instance = axios.create({
-  baseURL: process.env.VUE_APP_BASEURL,//设置基地址
-  withCredentials: true, //配置接收cookie
-});
-
-//登录方法
 export function userLogin(data = {}, callback = null) {
-  return instance.post('/login', data).then(res => {
-    typeof callback == 'function' ? callback(res.data) : console.log(res)
-    // typeof callback == 'function' ? (res.data.code == 200 ? callback(res.data) : alert('1111')
-    // ) : console.log(res)
-  }).catch(error => console.error(error));
+  return request({
+    url: '/login',
+    method: 'post',
+    data: data
+  }, callback)
 }
-
-//验证码方法
+// //验证码方法
 export function pinCode() {
   return process.env.VUE_APP_BASEURL + '/captcha?type=login&' + Date.now();
 }
