@@ -4,6 +4,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 //导入页面 index.vue可以省略
 import login from '@/views/login'
+import index from '@/views/index'
 
 //解决当前位置的冗余导航报错
 const originalPush = VueRouter.prototype.push
@@ -16,7 +17,8 @@ Vue.use(VueRouter);
 const router = new VueRouter({
     routes: [
         { path: '/', redirect: '/login' },//重定向
-        { path: '/login', component: login }
+        { path: '/login', component: login },//登录页
+        { path: '/index', component: index },//首页
     ]
 });
 export default router

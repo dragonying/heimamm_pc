@@ -52,6 +52,7 @@
 
 <script>
 import {userLogin,pinCode} from '@/api/login'
+import token from '@/utils/token'
 
 export default {
     name: 'login',
@@ -97,9 +98,15 @@ export default {
         onLogin() {
             this.$refs.form.validate(valid=>{
                 if(valid){
-                   userLogin(this.form).then(res=>{
-                    console.log(res)
-                    })
+                   userLogin(this.form,res=>{
+                    if(res.code == 200){
+                        this.$message.success('登录成功');
+                        token.setToken(res.data.token)
+                        this.$router.push('/index')
+                    }else{
+                        this.$message.error(res.message);
+                    }
+                   })
                 }else{
                     this.$message.warning('请输入正确的信息！');
                 }
@@ -113,7 +120,12 @@ export default {
         refreshCode(){
             this.codePic = pinCode();
         }
-    }
+    },
+    beforeCreate() {
+        //  if(token.getToken()){
+        //     this.$router.push('/index')
+        // }
+    },
 }
 </script>
 
