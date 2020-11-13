@@ -1,6 +1,6 @@
 <template>
 <!-- 注册对话框 -->
-<el-dialog title="用户注册" :width='width' center :visible.sync="regDialogShow">
+<el-dialog title="用户注册" :width='width' center :visible.sync="regDialogShow" @closed="closeHandler">
     <el-form :model="regForm" :rules="rules" ref='regForm' :label-width='labelWidth'>
         <el-form-item label="头像"  prop="avatar">
             <el-upload
@@ -27,7 +27,7 @@
         <el-form-item label="密码" prop="password" >
             <el-input v-model="regForm.password" show-password></el-input>
         </el-form-item>
-        <el-form-item label="图形码">
+        <el-form-item label="图形码" prop="code">
            <el-row>
                 <el-col :span="17">
                     <el-input v-model="regForm.code"></el-input>
@@ -66,13 +66,13 @@ export default {
             labelWidth:'70px',
             width:'603px',
             regDialogShow:false,
-            tempImgUrl:'',
+            tempImgUrl:'',//预览图片地址
             codePic:smPinCode(),//验证码
             regForm:{
                 avatar:'',//头像
                 username:'',
                 email:'',
-                phone:'18317958001',
+                phone:'',
                 password:'',
                 code:'',//图形验证码
                 rcode:'',//手机验证码
@@ -101,23 +101,24 @@ export default {
                 rcode:[
                     { required: true, message: '请输入手机验证码',trigger: 'blur'},
                 ],
+                code:[]
             }
         };
     },
     methods:{
-     handleAvatarSuccess(res, file) {
+      handleAvatarSuccess(res, file) {
         this.tempImgUrl = URL.createObjectURL(file.raw);//生成预览地址
         this.regForm.avatar = res.data.file_path;//路径
       },
       beforeAvatarUpload(file) {
-      if(!upload.acceptType.includes(file.type.substr(file.type.indexOf('/')+1))){
-            this.$message.error(`上传头像图片只能是${upload.acceptType.join('|')}格式!`);
+        if(!upload.acceptType.includes(file.type.substr(file.type.indexOf('/')+1))){
+                this.$message.error(`上传头像图片只能是${upload.acceptType.join('|')}格式!`);
+                return false;
+        }
+        if(file.size >upload.sizeLimit){
+            this.$message.error(`上传头像图片大小不能超过${Math.floor(upload.sizeLimit/1024/1024)}MB!`);
             return false;
-      }
-      if(file.size >upload.sizeLimit){
-          this.$message.error(`上传头像图片大小不能超过${upload.sizeLimit/1024/1024}MB!`);
-          return false;
-      }
+        }
         return true;
       },
       //验证码刷新
@@ -132,7 +133,6 @@ export default {
                        console.log(res)
                        this.$message.success('注册成功');
                        this.regDialogShow = false;
-                       this.$refs.regForm.resetField();//清空表单
                    })
                 }else{
                     this.$message.warning('请输入正确的信息！');
@@ -160,6 +160,7 @@ export default {
                     this.$message.success('验证码已发送！');
                     let tptxt = this.codeText;
                     this.delay = 10;
+                    //必须用箭头函数，否则this执行为windows
                     let t = setInterval(() => {
                         this.delay--
                         this.codeText = `${this.delay}秒后重新获取`;
@@ -175,6 +176,11 @@ export default {
 
                });
           });
+        },
+        //关闭弹窗时候触发，清空表单数据
+        closeHandler(){
+            this.$refs.regForm.resetFields();//只能清空含有prop属性的表单
+            this.tempImgUrl = '';
         }
     }
 }
