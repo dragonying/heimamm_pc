@@ -88,6 +88,7 @@ router.beforeEach((to, from, next) => {
     NProgress.start();
     next();//必须执行
 })
+//全局后置守卫
 router.afterEach((to) => {
     //设置title
     window.document.title = to.meta.title || '';
