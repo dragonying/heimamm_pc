@@ -1,3 +1,4 @@
+//注册页面
 import request from '@/api/request.js';
 
 export function userReg(data = {}, callback = null) {
@@ -14,12 +15,12 @@ export function smPinCode() {
 
 
 //发送短信验证码
-export function sendSms(data = {}, callback = null){
+export function sendSms(data = {}, callback = null) {
   return request({
     url: '/sendsms',
     method: 'post',
     data: data
-  }, callback)
+  }, callback, null, false)
 }
 
 //头像上传

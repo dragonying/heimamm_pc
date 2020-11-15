@@ -1,3 +1,4 @@
+//登录页面
 import request from '@/api/request.js';
 
 export function userLogin(data = {}, callback = null) {
@@ -5,7 +6,7 @@ export function userLogin(data = {}, callback = null) {
     url: '/login',
     method: 'post',
     data: data
-  }, callback)
+  }, callback, null, false)
 }
 // //验证码方法
 export function pinCode() {
