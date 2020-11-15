@@ -1,6 +1,6 @@
 //后台首页
 
-import request from '@/api/request.js';
+import request from '@/utils/request.js';
 import { Message } from 'element-ui';
 import router from '@/router'
 

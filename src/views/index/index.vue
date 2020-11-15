@@ -143,7 +143,8 @@ export default {
     }
     //主体
     .main{
-        background-color:green;
+        background-color:#e8e9ec;
+       box-shadow:inset 1px 0px 5px 1px #cac6c6;
     }
 }
 </style>

@@ -1,5 +1,5 @@
 //注册页面
-import request from '@/api/request.js';
+import request from '@/utils/request.js';
 
 export function userReg(data = {}, callback = null) {
   return request({

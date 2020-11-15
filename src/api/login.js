@@ -1,5 +1,5 @@
 //登录页面
-import request from '@/api/request.js';
+import request from '@/utils/request.js';
 
 export function userLogin(data = {}, callback = null) {
   return request({
