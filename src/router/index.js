@@ -2,10 +2,9 @@
 import Vue from 'vue'
 //引入路由
 import VueRouter from 'vue-router'
-//导入页面 index.vue可以省略
-// import login from '@/views/login'
-// import index from '@/views/index'
-// import charts from '@/views/index/charts'
+//进度条导航插件
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
 
 //解决当前位置的冗余导航报错
 const originalPush = VueRouter.prototype.push
@@ -14,6 +13,11 @@ VueRouter.prototype.push = function push(location) {
 }
 
 Vue.use(VueRouter);
+
+//导入页面 index.vue可以省略
+// import login from '@/views/login'
+// import index from '@/views/index'
+// import charts from '@/views/index/charts'
 
 // const router = new VueRouter({
 //     routes: [
@@ -31,16 +35,46 @@ Vue.use(VueRouter);
 const router = new VueRouter({
     routes: [
         { path: '/', redirect: '/login' },//重定向
-        { path: '/login', component: resolve => require(['@/views/login'], resolve) },//登录页
+        {
+            path: '/login', component: resolve => require(['@/views/login'], resolve),
+            meta: {
+                title: '用户登录'
+            }
+        },//登录页
         {
             path: '/index', component: resolve => require(['@/views/index'], resolve),//首页
             redirect: '/index/charts',
+            //设置子路由
             children: [
-                { path: 'charts', component: resolve => require(['@/views/index/charts'], resolve) },
-                { path: 'users', component: resolve => require(['@/views/index/users'], resolve) },
-                { path: 'companys', component: resolve => require(['@/views/index/companys'], resolve) },
-                { path: 'subjects', component: resolve => require(['@/views/index/subjects'], resolve) },
-                { path: 'questions', component: resolve => require(['@/views/index/questions'], resolve) },
+                {
+                    path: 'charts', component: resolve => require(['@/views/index/charts'], resolve),
+                    //添加路由原信息，字段名自定义
+                    meta: {
+                        title: '数据概览',
+                        zfy: 'fuck'
+                    }
+                },
+                {
+                    path: 'users', component: resolve => require(['@/views/index/users'], resolve),
+                    meta: {
+                        title: '用户列表'
+                    }
+                },
+                {
+                    path: 'companys', component: resolve => require(['@/views/index/companys'], resolve), meta: {
+                        title: '企业列表'
+                    }
+                },
+                {
+                    path: 'subjects', component: resolve => require(['@/views/index/subjects'], resolve), meta: {
+                        title: '学科列表'
+                    }
+                },
+                {
+                    path: 'questions', component: resolve => require(['@/views/index/questions'], resolve), meta: {
+                        title: '题库列表'
+                    }
+                },
             ]
         },
     ]
@@ -51,6 +85,13 @@ router.beforeEach((to, from, next) => {
     console.log('from:', from)
     console.log('to:', to)
     console.log('********************************************\n')
-    next();
+    NProgress.start();
+    next();//必须执行
+})
+router.afterEach((to) => {
+    //设置title
+    window.document.title = to.meta.title || '';
+
+    NProgress.done(true);
 })
 export default router
