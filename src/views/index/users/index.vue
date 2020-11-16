@@ -36,6 +36,13 @@
                 prop="id"
                 label="ID">
             </el-table-column>
+             <el-table-column label="头像">
+                <template slot-scope="scope">
+                    <el-image  v-if="scope.row.avatar"  class='avatar'
+                        :src="scope.row.avatar | useravatar"
+                        fit="cover"></el-image>
+                </template>
+            </el-table-column>
             <el-table-column
                 prop="username"
                 label="用户名">
@@ -216,13 +223,17 @@ export default {
            });
             
         }).catch(() => {});
-      }
+      },
+
     },
     filters:{
      //状态
       statusTitle(status,statusLable){
          return statusLable[statusLable.findIndex(r=>r.value == status)].title;
       },
+    useravatar(url){
+            return process.env.VUE_APP_BASEURL + url
+     }
     },
     mounted() {
         this.getUserList();
@@ -241,6 +252,12 @@ export default {
             .middle-input{
                 width:150px;
             }
+        }
+
+        .avatar{
+            width:80px;
+            height:80px;
+            border-radius:50%;
         }
 
         .el-pagination{
