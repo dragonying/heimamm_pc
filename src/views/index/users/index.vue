@@ -1,17 +1,19 @@
 <template>
-    <div class='subject-container'>
+    <div class='user-container'>
         <el-card class="box-card search-box">
             <el-form :inline="true" :model="searchItem" ref="search" class="demo-form-inline">
-                <el-form-item label="学科编号" prop='rid' >
-                    <el-input class='min-input' v-model.trim="searchItem.eid"></el-input>
-                </el-form-item>
-                <el-form-item label="学科名称" prop='name'>
-                    <el-input class='middle-input' v-model.trim="searchItem.name"></el-input>
-                </el-form-item>
-                <el-form-item label="创建者" prop="username">
+                <el-form-item label="用户名称" prop='username' >
                     <el-input class='min-input' v-model.trim="searchItem.username"></el-input>
                 </el-form-item>
-                <el-form-item label="请选择状态" prop="status">
+                <el-form-item label="用户邮箱" prop='email'>
+                    <el-input class='middle-input' v-model.trim="searchItem.email"></el-input>
+                </el-form-item>
+                <el-form-item label="角色" prop="role_id">
+                    <el-select class='middle-input'  v-model="searchItem.role_id">
+                    <el-option v-for="rl in rolesLable" :label="rl.title" :value="rl.value" :key="rl.value"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="用户状态" prop="status">
                     <el-select class='middle-input'  v-model="searchItem.status">
                     <el-option v-for="itm in statusLable" :label="itm.title" :value="itm.value" :key="itm.value"></el-option>
                     </el-select>
@@ -19,7 +21,7 @@
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">搜索</el-button>
                     <el-button @click='clear'>清除</el-button>
-                    <el-button type="primary" icon="el-icon-plus" @click="addDialog">新增学科</el-button>
+                    <el-button type="primary" icon="el-icon-plus" @click="addDialog">新增用户</el-button>
                 </el-form-item>
             </el-form>
         </el-card>
@@ -35,28 +37,24 @@
                 label="ID">
             </el-table-column>
             <el-table-column
-                prop="rid"
-                label="学科编号">
+                prop="username"
+                label="用户名">
             </el-table-column>
             <el-table-column
-                prop="name"
-                label="学科名称">
+                prop="phone"
+                label="电话">
             </el-table-column>
              <el-table-column
-                prop="short_name"
-                label="简称">
+                prop="email"
+                label="邮箱">
             </el-table-column>
             <el-table-column
-                prop="username"
-                label="创建者">
+                prop="role"
+                label="角色">
             </el-table-column>
             <el-table-column
-                label="创建日期">
-                <template slot-scope="scope">
-                    <el-tooltip class="item" effect="dark" :content="scope.row.create_time" placement="top-start">
-                        <span>{{scope.row.create_time | formatDate}}</span>
-                    </el-tooltip>
-                </template>
+                prop="remark"
+                label="备注">
             </el-table-column>
             <el-table-column label="状态">
                 <template slot-scope="scope">
@@ -66,7 +64,7 @@
             <el-table-column label="操作" >
                 <template slot-scope="scope">
                     <el-button
-                    size="mini" type="primary" @click="editDialog(scope.row.id)"
+                    size="mini" type="primary" @click="editDialog(scope.row)"
                     >编辑</el-button>
                     <el-button
                     size="mini"
@@ -91,13 +89,13 @@
             :total="page.total">
     </el-pagination>
     </el-card>
-    <diaLogComponent ref='dialog' :dialogItem="dialogItem"></diaLogComponent>
+    <diaLogComponent ref='dialog'></diaLogComponent>
     </div>
 </template>
 <script>
-import {getSubjectList,setStatus,delSubject} from '@/api/subject'
-import diaLogComponent from '@/views/index/subjects/edit'
-import moment from 'moment'
+import {getUserList,setStatus,delUser,getRoles} from '@/api/user'
+import diaLogComponent from '@/views/index/users/edit'
+import {deepClone} from '@/utils/tool'
 
 export default {
     name:'user-list',
@@ -107,14 +105,10 @@ export default {
     },
     data() {
       return {
-        dialogItem:{
-            show:false,
-            id:'',//
-        },//弹窗
         searchItem: {
-          rid: '',
-          name: '',
-          username:'',
+          username: '',
+          email: '',
+          role_id:'',
           status:''
         },
         tableData:  [],
@@ -128,7 +122,8 @@ export default {
         statusLable:[
             {title:'启用',value:1},
             {title:'禁用',value:0},
-        ]
+        ],
+        rolesLable:[]
       }
     },
     watch: {
@@ -136,39 +131,47 @@ export default {
         'page.total'(){
             if(this.page.total==(this.page.currentPage-1)*this.page.pageSize && this.page.total!=0){
                 this.page.currentPage -= 1
-                this.getSubjectList();
+                this.getUserList();
             }
         }
     },
     methods: {
       addDialog(){
-        this.dialogItem.show = true;
+        this.$refs.dialog.showDialog = true;
       },
-      editDialog(id){
-        this.dialogItem.show = true;
-        this.dialogItem.id = id;
+      editDialog(user){
+        this.$refs.dialog.showDialog = true;
+        this.$refs.dialog.editForm = deepClone({
+                id:user.id,//用户id
+                username:user.username,//用户名
+                email:user.email,//用户邮箱
+                phone:user.phone,//电话
+                role_id:user.role_id,//角色
+                status:user.status,//状态
+                remark:user.remark,//备注
+        });
       },  
       onSubmit() {
         this.page.currentPage = 1;//页码还原
-        this.getSubjectList();
+        this.getUserList();
       },
       //清除
       clear(){
           this.$refs.search.resetFields();
           this.page.currentPage = 1;//页码还原
-          this.getSubjectList();
+          this.getUserList();
       },
       handleSizeChange(val) {
         this.page.pageSize = val;
-        this.getSubjectList();
+        this.getUserList();
       },
       handleCurrentChange(val) {
         this.page.currentPage = val;
-        this.getSubjectList();
+        this.getUserList();
       },
       //搜索列表数据
-      getSubjectList(){
-        getSubjectList({
+      getUserList(){
+        getUserList({
             limit: this.page.pageSize,
             page:this.page.currentPage,
             ...this.searchItem
@@ -189,7 +192,7 @@ export default {
                     message: '操作成功',
                     type: 'success',
                     onClose:()=>{
-                        this.getSubjectList();
+                        this.getUserList();
                     }
                });
            });
@@ -202,12 +205,12 @@ export default {
             cancelButtonText: '取消',
             type: 'warning'
         }).then(() => {
-           delSubject({id:row.id},()=>{
+           delUser({id:row.id},()=>{
                this.$message({
                     message: '操作成功',
                     type: 'success',
                     onClose:()=>{
-                        this.getSubjectList();
+                        this.getUserList();
                     }
                });
            });
@@ -220,19 +223,16 @@ export default {
       statusTitle(status,statusLable){
          return statusLable[statusLable.findIndex(r=>r.value == status)].title;
       },
-      //日期格式化
-      formatDate(val){
-          return moment(val).format('YYYY年MM月DD日')
-      }
     },
     mounted() {
-        this.getSubjectList()
+        this.getUserList();
+        getRoles(res=>{this.rolesLable = res});//角色
     },
   }
 </script>
 
 <style lang="less">
-    .subject-container{
+    .user-container{
         .search-box{
             margin-bottom:19px;
             .min-input{

@@ -49,8 +49,18 @@ export function editorUser(data = {}, callback = null) {
 //详情
 export function getInfo(data = {}, callback = null) {
     return request({
-        url: '/subject/info',
+        url: '/info',
         method: 'get',
         params: data
     }, callback)
 }
+
+//所有角色
+export function getRoles(callback = null) {
+    return request({
+        url: '/user/userRoles',
+        method: 'get',
+    }, callback)
+}
+
+
