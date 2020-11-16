@@ -1,12 +1,12 @@
-//企业列表
+//学科列表
 
 import request from '@/utils/request.js';
 
 
-//面板数据
-export function getCompanyList(data={},callback = null) {
+//列表数据
+export function getSubjectList(data={},callback = null) {
     return request({
-        url: '/enterprise/list',
+        url: '/subject/list',
         method: 'get',
         params:data
     }, callback)
@@ -15,34 +15,32 @@ export function getCompanyList(data={},callback = null) {
 //更改状态
 export function setStatus(data={},callback = null) {
     return request({
-        url: '/enterprise/status',
+        url: '/subject/status',
         method: 'post',
         data:data
     }, callback)
 }
 
-//删除企业
-export function delCompany(data={},callback = null) {
+//删除
+export function delSubject(data={},callback = null) {
     return request({
-        url: '/enterprise/remove',
+        url: '/subject/remove',
         method: 'post',
         data:data
     }, callback)
 }
-
-//新增企业
-export function addCompany(data={},callback = null) {
+//新增
+export function addSubject(data={},callback = null) {
     return request({
-        url: '/enterprise/add',
+        url: '/subject/add',
         method: 'post',
         data:data
     }, callback)
 }
-
-//编辑企业
-export function editCompany(data={},callback = null) {
+//编辑
+export function editorSubject(data={},callback = null) {
     return request({
-        url: '/enterprise/edit',
+        url: '/subject/edit',
         method: 'post',
         data:data
     }, callback)
@@ -51,7 +49,7 @@ export function editCompany(data={},callback = null) {
 //详情
 export function getInfo(data={},callback = null) {
     return request({
-        url: '/enterprise/info',
+        url: '/subject/info',
         method: 'get',
         params:data
     }, callback)
