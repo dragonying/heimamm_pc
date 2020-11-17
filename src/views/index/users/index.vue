@@ -40,7 +40,9 @@
                 <template slot-scope="scope">
                     <el-image  v-if="scope.row.avatar"  class='avatar'
                         :src="scope.row.avatar | useravatar"
-                        fit="cover"></el-image>
+                        fit="cover"
+                        :preview-src-list="preview(scope.row)"
+                        ></el-image>
                 </template>
             </el-table-column>
             <el-table-column
@@ -60,8 +62,17 @@
                 label="角色">
             </el-table-column>
             <el-table-column
-                prop="remark"
                 label="备注">
+                <template slot-scope="scope">
+                  <el-popover
+                    placement="top-start"
+                    title="简介"
+                    width="300"
+                    trigger="hover"
+                    :content="scope.row.remark | userIntro">
+                    <span slot="reference"  class='intro'>{{scope.row.remark}}</span>
+                </el-popover>
+                </template>
             </el-table-column>
             <el-table-column label="状态">
                 <template slot-scope="scope">
@@ -224,12 +235,27 @@ export default {
             
         }).catch(() => {});
       },
+      preview(row){
+          return row.pic ? row.pic.map(v=>{
+              return process.env.VUE_APP_BASEURL+v;
+          }) : [];
+      }
 
     },
     filters:{
      //状态
       statusTitle(status,statusLable){
          return statusLable[statusLable.findIndex(r=>r.value == status)].title;
+      },
+      userIntro(s){
+          let keyArr = ['生日', '星座', '今年', '身高', '三围', '罩杯', '血型', '来自', '职业', '兴趣'];
+          let format = keyArr.map((v, i, r) => {
+                let start = s.indexOf(v) + v.length;
+                let end = s.indexOf(r[i + 1]);
+                let item = end < 0 ?s.substring(start):s.substring(start, end);
+                return v+item;
+            });
+          return format.join(" ");
       },
     useravatar(url){
             return process.env.VUE_APP_BASEURL + url
@@ -268,6 +294,11 @@ export default {
         }
         .red{
             color:red;
+        }
+        .intro{
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
         }
     }
 </style>
