@@ -56,7 +56,7 @@
             </el-table-column>
             <el-table-column label="状态">
                 <template slot-scope="scope">
-                    <span :class="{red:!scope.row.status}" >{{scope.row.status | statusTitle(statusLable)}}</span>
+                    <span :class="{red:!scope.row.status}" >{{scope.row.status | txtExchange(statusLable)}}</span>
                 </template>
             </el-table-column>
             <el-table-column label="操作" >
@@ -93,7 +93,6 @@
 <script>
 import {getCompanyList,setStatus,delCompany} from '@/api/company'
 import diaLogComponent from '@/views/index/companys/edit'
-import moment from 'moment'
 
 export default {
     name:'companys-list',
@@ -207,16 +206,6 @@ export default {
            });
             
         }).catch(() => {});
-      }
-    },
-    filters:{
-     //状态
-      statusTitle(status,statusLable){
-         return statusLable[statusLable.findIndex(r=>r.value == status)].title;
-      },
-    //日期格式化
-      formatDate(val){
-          return moment(val).format('YYYY年MM月DD日')
       }
     },
     mounted() {

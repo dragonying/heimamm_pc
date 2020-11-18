@@ -14,9 +14,11 @@ import '@/assets/css/base.css'
 
 //到入elem
 import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
+// import 'element-ui/lib/theme-chalk/index.css'; //默认主题
+import '@/assets/scss/element-variables.scss' //使用自定义主题，修改后需要重新启动项目
 Vue.use(ElementUI);
-
+//导入全局过滤器
+import '@/utils/filters'
 
 new Vue({
   router: router,
