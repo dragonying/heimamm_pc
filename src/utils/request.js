@@ -23,8 +23,9 @@ instance.interceptors.request.use(function (config) {
 
 // 添加响应拦截器
 instance.interceptors.response.use(function (response) {
-    if(response.data.code == 206){
+    if (response.data.code == 206) {
         Message.error('token有误，请重新登录');
+        token.delToken();
         router.push('/login');
     }
     return response;
@@ -54,6 +55,9 @@ export default function (option = {}, success = null, failed = null, needToken =
     return instance(option).then(res => {
         console.log('请求地址:' + option.url, res, "===============================================\n")
         typeof success == 'function' ? (res.data.code == 200 ? success(res.data.data) : (typeof failed == 'function' ? failed(res.data) : Message.error(res.data.message || res.data.msg))) : console.log(res)
-    }).catch(error => console.error(error));
+    }).catch(error => {
+        Message.error(error);
+        console.error(error)
+    });
 }
 
