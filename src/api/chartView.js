@@ -34,3 +34,19 @@ export function getProvince(callback = null) {
         method: 'post',
     }, callback)
 }
+
+//用户日数据统计
+export function getUserDateData(callback = null) {
+    return request({
+        url: '/data/userDateData',
+        method: 'post',
+    }, callback)
+}
+
+//用户年度月数据统计
+export function getUserYearMonthData(callback = null) {
+    return request({
+        url: '/data/yearMonthData',
+        method: 'post',
+    }, callback)
+}

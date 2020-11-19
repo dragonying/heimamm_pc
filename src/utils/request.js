@@ -53,7 +53,7 @@ export default function (option = {}, success = null, failed = null, needToken =
         option.headers = { 'token': userToken }
     }
     return instance(option).then(res => {
-        console.log('请求地址:' + option.url, res, "===============================================\n")
+        // console.log('请求地址:' + option.url, res, "===============================================\n")
         typeof success == 'function' ? (res.data.code == 200 ? success(res.data.data) : (typeof failed == 'function' ? failed(res.data) : Message.error(res.data.message || res.data.msg))) : console.log(res)
     }).catch(error => {
         Message.error(error);

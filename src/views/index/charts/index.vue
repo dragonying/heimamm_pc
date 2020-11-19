@@ -28,28 +28,40 @@
             </li>
         </ul>
     </el-card>
+    <!--年度月数据统计-->
+     <el-card class="box-card chart-box">
+        <yearMonth :yearMonthData="yearMonthData"></yearMonth>
+    </el-card>
     <el-card class="box-card chart-box">
-        <div class='chart divide' ref="questionchart">
+        <div class='chart' ref="questionchart">
         </div>
-        <div class='chart divide' ref="rolechart">
+        <div class='chart' ref="rolechart">
         </div>
     </el-card>
+     <!--日统计数据-->
      <el-card class="box-card chart-box">
-        <chartMap></chartMap>
+        <dateTable :tableData="dateData"></dateTable>
+    </el-card>
+     <!--用户地区分布图-->
+     <el-card class="box-card chart-box">
+        <chartMap :chartData="mapData"></chartMap>
     </el-card>
     </div>
 </template>
 <script>
 import echarts from 'echarts'
-import 'echarts/map/js/china.js'; 
 
-import {getTitleData,getQuestionStatistics,getRoleStatistics} from '@/api/chartView'
+import {getTitleData,getQuestionStatistics,getRoleStatistics,getProvince,getUserDateData,getUserYearMonthData} from '@/api/chartView'
 import chartMap from '@/components/charts/map'
+import dateTable from '@/components/charts/table'
+import yearMonth from '@/components/charts/yearMonth'
 
 export default {
     name:'chart',
     components:{
-        chartMap
+        chartMap,
+        dateTable,
+        yearMonth
     },
     data(){
         return {
@@ -60,7 +72,10 @@ export default {
                 increment_users:0,//今日增长用户数量
                 increment_questions:0,//今日增加题数
                 total_questions:0,//题总数
-            }
+            },
+            mapData:{},//地图分布数据
+            dateData:[],//日统计数据
+            yearMonthData:[],//年度月数据统计
         }
     },
     methods:{
@@ -186,6 +201,15 @@ export default {
         getRoleStatistics(res=>{
             this.createPieCharts(this.$refs.rolechart,res)
         })
+        getProvince(res=>{
+            this.mapData = res;
+        });
+        getUserDateData(res=>{
+           this.dateData = res;
+        });
+        getUserYearMonthData(res=>{
+            this.yearMonthData = res;
+        });
     },
 }
 </script>
@@ -237,10 +261,7 @@ export default {
             width:100%;
            .chart{
              height:570px;
-             width:100%;
-             &.divide{
-                 width:50%;
-             }
+             flex:1;
            }
         }
         

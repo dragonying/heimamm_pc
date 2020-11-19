@@ -82,9 +82,9 @@ const router = new VueRouter({
 
 //全局前置守卫
 router.beforeEach((to, from, next) => {
-    console.log('from:', from)
-    console.log('to:', to)
-    console.log('********************************************\n')
+    // console.log('from:', from)
+    // console.log('to:', to)
+    // console.log('********************************************\n')
     NProgress.start();
     next();//必须执行
 })

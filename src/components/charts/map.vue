@@ -6,13 +6,19 @@
 <script>
 import echarts from 'echarts'
 import 'echarts/map/js/china.js'; 
-import {getProvince} from '@/api/chartView'
 import {randomColor} from '@/utils/tool'
 
 export default {
     name:"chart-map",
+    props:['chartData'],
     data(){
         return {};
+    },
+    watch: {
+        //由于chartData是父组件通过ajax请求获得的数据，存在异步延时，第一次通过create或者mouted是无法获取该数据，得通过侦听器获取
+        chartData(){
+            this.chartData.data &&  this.createMap();
+        }
     },
     methods:{
       createPieces(arr){    
@@ -49,12 +55,12 @@ export default {
         }
         return pieces;
       },
-      createMap(target,res){
-           let title = res.title;
-           let seriesName = res.seriesName;
-           let dataData = res.data;
+      createMap(){
+           let title = this.chartData.title;
+           let seriesName = this.chartData.seriesName;
+           let dataData = this.chartData.data;
            let pieces = this.createPieces(dataData);
-           echarts.init(target).setOption({
+           echarts.init(this.$refs.map).setOption({
                title:{
                     text:title,
                     left: 'left',
@@ -117,12 +123,7 @@ export default {
                 }]
             });
         }
-    },
-    mounted() {
-        getProvince(res=>{
-            this.createMap(this.$refs.map,res)
-        });
-    },
+    }
 }
 </script>
 
