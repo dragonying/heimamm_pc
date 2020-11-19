@@ -18,3 +18,19 @@ export function getQuestionStatistics(callback = null) {
         method: 'post',
     }, callback)
 }
+
+//用户职业统计
+export function getRoleStatistics(callback = null) {
+    return request({
+        url: '/data/userrole',
+        method: 'post',
+    }, callback)
+}
+
+//用户地区分布
+export function getProvince(callback = null) {
+    return request({
+        url: '/data/userProvince',
+        method: 'post',
+    }, callback)
+}

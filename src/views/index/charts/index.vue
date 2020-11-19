@@ -29,17 +29,28 @@
         </ul>
     </el-card>
     <el-card class="box-card chart-box">
-        <div class='chart' ref="chart">
+        <div class='chart divide' ref="questionchart">
         </div>
+        <div class='chart divide' ref="rolechart">
+        </div>
+    </el-card>
+     <el-card class="box-card chart-box">
+        <chartMap></chartMap>
     </el-card>
     </div>
 </template>
 <script>
 import echarts from 'echarts'
-import {getTitleData,getQuestionStatistics} from '@/api/chartView'
+import 'echarts/map/js/china.js'; 
+
+import {getTitleData,getQuestionStatistics,getRoleStatistics} from '@/api/chartView'
+import chartMap from '@/components/charts/map'
 
 export default {
     name:'chart',
+    components:{
+        chartMap
+    },
     data(){
         return {
             titleData:{
@@ -53,10 +64,15 @@ export default {
         }
     },
     methods:{
-        createCharts(legendData=[],dataData=[]){
-           echarts.init(this.$refs.chart).setOption({
+        createPieCharts(target,res){
+           let title = res.title;
+           let seriesName = res.seriesName;
+           let dataData = res.data;
+           let legendData = dataData.map(r=>r.name);
+           echarts.init(target).setOption({
                 title:{
-                    text:'整体数据',
+                    text:title,
+                    left: 'center',
                     textStyle:{
                         fontSize:24,
                         fontWeight:'normal',
@@ -87,7 +103,7 @@ export default {
                 },
                 series: [
                     {
-                        name: '访问来源',
+                        name: seriesName,
                         type: 'pie',
                         radius: ['50%', '70%'],
                         avoidLabelOverlap: false,
@@ -110,14 +126,66 @@ export default {
                 ]
             });
         },
+        createPieNewCharts(target,res){
+           let title = res.title;
+           let seriesName = res.seriesName;
+           let dataData = res.data;
+           let legendData = dataData.map(r=>r.name);
+           echarts.init(target).setOption({
+               title:{
+                    text:title,
+                    left: 'left',
+                    textStyle:{
+                        fontSize:24,
+                        fontWeight:'normal',
+                        color:'#666666'
+                    }
+                },
+                 tooltip: {
+                    trigger: 'item',
+                    formatter: '{a} <br/>{b}: {c} ({d}%)'
+                },
+                //生成指定数量的颜色选项
+                color:(function () {
+                    let numArr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 'a', 'b', 'c', 'd', 'e', 'f'];
+                    let colorArr = [];
+                    legendData.forEach(()=>{
+                        let s = '#'
+                        for (let i = 0; i < 6; i++) {
+                            s += new String(numArr[Math.floor(Math.random() * (numArr.length))]);
+                        }
+                        colorArr.push(s)
+                    });
+                    return colorArr;
+                 }()),
+                legend: {
+                    left: 'center',
+                    bottom: '20px',
+                    data: legendData
+                },
+                series: [
+                    {
+                        name: seriesName,
+                        type: 'pie',
+                        radius: [0, '30%'],
+                        center: ['50%', '50%'],
+                        roseType: 'area',
+                        data: dataData
+                    },
+                ]
+            });
+        },
     },
     mounted() {
         getTitleData(res=>{
             this.titleData = res;
         });
         getQuestionStatistics(res=>{
-            this.createCharts(res.map(r=>r.name),res)
+            this.createPieNewCharts(this.$refs.questionchart,res)
         });
+        getRoleStatistics(res=>{
+            this.createPieCharts(this.$refs.rolechart,res)
+        })
     },
 }
 </script>
@@ -162,9 +230,20 @@ export default {
     }
     .chart-box{
         margin-top:13px;
-        .chart{
+        .el-card__body{
+            display:flex;
+            justify-content: space-around;
+            align-items: center;
+            width:100%;
+           .chart{
              height:570px;
+             width:100%;
+             &.divide{
+                 width:50%;
+             }
+           }
         }
+        
     }
     
 }
