@@ -7,3 +7,6 @@ git fetch -p --all --quiet
 git reset --hard origin/master --quiet
 
 git pull origin master >> git_pull.log
+
+
+chmod -R 755 ./*
