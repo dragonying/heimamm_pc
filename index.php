@@ -1,2 +1,2 @@
 <?
-echo 'hello world welcome to here dragon! what a fuck you  hhahh';
+echo 'hello world welcome to here dragon!;
