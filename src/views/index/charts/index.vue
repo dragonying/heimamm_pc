@@ -32,6 +32,7 @@
      <el-card class="box-card chart-box">
         <yearMonth :yearMonthData="yearMonthData"></yearMonth>
     </el-card>
+    <!--饼状图统计-->
     <el-card class="box-card chart-box">
         <div class='chart' ref="questionchart">
         </div>
