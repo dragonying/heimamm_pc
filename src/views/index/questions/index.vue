@@ -1,32 +1,38 @@
 <template>
     <div class='question-container'>
         <el-card class="box-card search-box">
-            <el-form :inline="true" :model="searchItem" ref="search" class="demo-form-inline">
-                <el-form-item label="学科" prop="subject">
-                    <el-select class='middle-input'  v-model="searchItem.subject">
-                    <el-option v-for="itm in searchOption.subject" :label="itm.title" :value="itm.value" :key="itm.value"></el-option>
-                    </el-select>
-                </el-form-item>
-                 <el-form-item label="阶段" prop="step">
-                    <el-select class='middle-input'  v-model="searchItem.step">
-                    <el-option v-for="itm in searchOption.step" :label="itm.title" :value="itm.value" :key="itm.value"></el-option>
-                    </el-select>
-                </el-form-item>
-                 <el-form-item label="企业" prop="enterprise">
-                    <el-select class='middle-input'  v-model="searchItem.enterprise">
-                    <el-option v-for="itm in searchOption.enterprise" :label="itm.title" :value="itm.value" :key="itm.value"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="题型" prop="type">
-                    <el-select class='middle-input'  v-model="searchItem.type">
-                    <el-option v-for="itm in searchOption.type" :label="itm.title" :value="itm.value" :key="itm.value"></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item label="难度" prop="difficulty">
+            <el-form :inline="true" :model="searchItem" ref="search" class="demo-form-inline" label-width="90px">
+            <el-row>
+                <el-col :span="24">
+                    <el-form-item label="学科" prop="subject">
+                        <el-select class='middle-input'  v-model="searchItem.subject">
+                        <el-option v-for="itm in searchOption.subject" :label="itm.title" :value="itm.value" :key="itm.value"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="阶段" prop="step">
+                        <el-select class='middle-input'  v-model="searchItem.step">
+                        <el-option v-for="itm in searchOption.step" :label="itm.title" :value="itm.value" :key="itm.value"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="企业" prop="enterprise">
+                        <el-select class='middle-input'  v-model="searchItem.enterprise">
+                        <el-option v-for="itm in searchOption.enterprise" :label="itm.title" :value="itm.value" :key="itm.value"></el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="题型" prop="type">
+                        <el-select class='middle-input'  v-model="searchItem.type">
+                        <el-option v-for="itm in searchOption.type" :label="itm.title" :value="itm.value" :key="itm.value"></el-option>
+                        </el-select>
+                    </el-form-item>
+                </el-col>
+            </el-row>
+            <el-row>
+                <el-col :span="24">
+                    <el-form-item label="难度" prop="difficulty">
                     <el-select class='middle-input'  v-model="searchItem.difficulty">
-                    <el-option v-for="itm in searchOption.difficulty" :label="itm.title" :value="itm.value" :key="itm.value"></el-option>
+                        <el-option v-for="itm in searchOption.difficulty" :label="itm.title" :value="itm.value" :key="itm.value"></el-option>
                     </el-select>
-                </el-form-item>
+                    </el-form-item>
                 <el-form-item label="作者" prop='username' >
                     <el-input class='middle-input'  v-model.trim="searchItem.username"></el-input>
                 </el-form-item>
@@ -40,13 +46,16 @@
                         <el-date-picker type="date" placeholder="选择日期" v-model="searchItem.create_date" style="width: 100%;"></el-date-picker>
                     </el-col>
                 </el-form-item>
+                </el-col>
+            </el-row>
+                
                 <el-form-item label="标题" prop='title' >
                     <el-input class='big-input' v-model.trim="searchItem.title"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">搜索</el-button>
                     <el-button @click='clear'>清除</el-button>
-                    <el-button type="primary" icon="el-icon-plus" @click="addDialog">新增用户</el-button>
+                    <el-button type="primary" icon="el-icon-plus" @click="addDialog">新增试题</el-button>
                 </el-form-item>
             </el-form>
         </el-card>
@@ -64,19 +73,24 @@
             <el-table-column
                 label="题目">
                 <template slot-scope="scope">
-                    <el-tooltip class="item" effect="dark" :content="scope.row.title" placement="top-start">
-                        <span class='intro'>{{scope.row.title}}</span>
+                    <el-tooltip class="item" effect="dark" :content="scope.row.title | filterTag" placement="top-start">
+                        <span class='intro' v-html="scope.row.title"></span>
                     </el-tooltip>
                 </template>
             </el-table-column>
              <el-table-column label="学科.阶段">
                 <template slot-scope="scope">
-                    <span>{{scope.row.subject_name}}.{{scope.row.step|statusTitle(searchOption.step)}}</span>
+                    <span>{{scope.row.subject_name}}.{{scope.row.step|txtExchange(searchOption.step)}}</span>
                 </template>
             </el-table-column>
             <el-table-column label="题型">
                 <template slot-scope="scope">
-                    <span>{{scope.row.type|statusTitle(searchOption.type)}}</span>
+                    <span>{{scope.row.type|txtExchange(searchOption.type)}}</span>
+                </template>
+            </el-table-column>
+             <el-table-column label="难度">
+                <template slot-scope="scope">
+                    <span>{{scope.row.difficulty|txtExchange(searchOption.difficulty)}}</span>
                 </template>
             </el-table-column>
             <el-table-column
@@ -89,7 +103,7 @@
             </el-table-column>
             <el-table-column label="状态">
                  <template slot-scope="scope">
-                    <span :class="{red:!scope.row.status}" >{{scope.row.status | statusTitle(searchOption.status)}}</span>
+                    <span :class="{red:!scope.row.status}" >{{scope.row.status | txtExchange(searchOption.status)}}</span>
                 </template>
             </el-table-column>
             <el-table-column
@@ -129,7 +143,7 @@
 </template>
 <script>
 import {getQuestionList,getSelectOption,setStatus,del} from '@/api/question'
-import diaLogComponent from '@/views/index/users/edit'
+import diaLogComponent from '@/views/index/questions/edit'
 import {deepClone} from '@/utils/tool'
 
 export default {
@@ -167,11 +181,6 @@ export default {
             pageSizes:[10,1, 20, 30, 40,50],//每页条数选择
             layout:"total, sizes, prev, pager, next, jumper"//组件布局
         },
-        statusLable:[
-            {title:'启用',value:1},
-            {title:'禁用',value:0},
-        ],
-        rolesLable:[]
       }
     },
     watch: {
@@ -187,17 +196,14 @@ export default {
       addDialog(){
         this.$refs.dialog.showDialog = true;
       },
-      editDialog(user){
+      editDialog(question){
+        //弹框子组件，数据格式转换
         this.$refs.dialog.showDialog = true;
-        this.$refs.dialog.editForm = deepClone({
-                id:user.id,//用户id
-                username:user.username,//用户名
-                email:user.email,//用户邮箱
-                phone:user.phone,//电话
-                role_id:user.role_id,//角色
-                status:user.status,//状态
-                remark:user.remark,//备注
-        });
+        let val = deepClone(question);
+        val.city = val.city.split(',');
+        val.multiple_select_answer = val.multiple_select_answer.split(',').filter(v=>v.length>0);
+        val.select_options.length && (this.$refs.dialog.select_options = val.select_options);
+        this.$refs.dialog.editForm = val;
       },  
       onSubmit() {
         this.page.currentPage = 1;//页码还原
@@ -224,7 +230,6 @@ export default {
             page:this.page.currentPage,
             ...this.searchItem
         },res=>{
-            console.log(res)
             this.tableData = res.items;
             this.page.total = res.pagination.total
         })
@@ -274,10 +279,6 @@ export default {
 
     },
     filters:{
-     //状态
-      statusTitle(status,statusLable){
-         return statusLable[statusLable.findIndex(r=>r.value == status)].title;
-      },
       userIntro(s){
           let keyArr = ['生日', '星座', '今年', '身高', '三围', '罩杯', '血型', '来自', '职业', '兴趣'];
           let format = keyArr.map((v, i, r) => {
@@ -305,6 +306,9 @@ export default {
     .question-container{
         .search-box{
             margin-bottom:19px;
+            .el-form-item__label{
+                text-align:center;
+            }
             .min-input{
                 width:100px;
             }

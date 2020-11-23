@@ -46,7 +46,7 @@ export function add(data = {}, callback = null) {
     }, callback)
 }
 //编辑
-export function editor(data = {}, callback = null) {
+export function edit(data = {}, callback = null) {
     return request({
         url: '/question/edit',
         method: 'post',

@@ -6,5 +6,11 @@ Vue.filter('formatDate',value=> moment(value).format('YYYY年MM月DD日'));
 
 //文案转换 statusLabel = [{title:'hello',value:'world}]  status='world
 Vue.filter('txtExchange',(status,statusLabel)=>{
-    return statusLabel[statusLabel.findIndex(r=>r.value == status)].title;
+    let index = statusLabel.findIndex(r=>r.value == status);
+    return index < 0 ? '' : statusLabel[index].title;
+ });
+
+ //过滤html标签
+ Vue.filter('filterTag',v=>{
+    return v.replace(/<.*?>/g,"");
  });
