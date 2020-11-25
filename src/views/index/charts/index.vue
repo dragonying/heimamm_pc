@@ -68,7 +68,7 @@ export default {
   components: {
     chartMap,
     dateTable
-    // yearMonth
+    yearMonth
   },
   data () {
     return {
