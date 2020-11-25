@@ -57,7 +57,7 @@ const router = new VueRouter({
                 {
                     path: 'users', component: resolve => require(['@/views/index/users'], resolve),
                     meta: {
-                        title: '用户列表'
+                        title: '用户列表',
                     }
                 },
                 {
@@ -73,6 +73,11 @@ const router = new VueRouter({
                 {
                     path: 'questions', component: resolve => require(['@/views/index/questions'], resolve), meta: {
                         title: '题库列表'
+                    }
+                },
+                {
+                    path: 'role', component: resolve => require(['@/views/index/role'], resolve), meta: {
+                        title: '角色管理'
                     }
                 },
             ]

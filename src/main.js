@@ -19,8 +19,12 @@ import '@/assets/scss/element-variables.scss' //使用自定义主题，修改�
 Vue.use(ElementUI);
 //导入全局过滤器
 import '@/utils/filters'
+//引入vuex
+import store from '@/store'
 
 new Vue({
   router: router,
+  store,//  // 挂载到Vue实例上
   render: h => h(App),
+
 }).$mount('#app')

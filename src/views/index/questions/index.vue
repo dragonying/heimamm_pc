@@ -56,12 +56,38 @@
                     <el-button type="primary" @click="onSubmit">搜索</el-button>
                     <el-button @click='clear'>清除</el-button>
                     <el-button type="primary" icon="el-icon-plus" @click="addDialog">新增试题</el-button>
+                    <el-button type="success" @click='viewModelByCard=!viewModelByCard'>切换观看模式</el-button>
                 </el-form-item>
             </el-form>
         </el-card>
+        <el-card  class="box-card table-box">
+            <el-row v-if="viewModelByCard" class='materials'>
+                <el-col class='itm' v-for="(item, index) in tableData" :key="index">
+                    <el-card>
+                    <img :src="imgPath(item)" class="image">
+                    <div style="padding: 10px;">
+                        <h4 class="intro" v-html="item.title" v-bind:title="item.title | filterTag">标题：</h4>
+                        <p>学科：{{item.subject_name}}.{{item.step|txtExchange(searchOption.step)}}</p>
+                        <p>题型：{{item.type|txtExchange(searchOption.type)}}</p>
+                        <p>难度：{{item.difficulty|txtExchange(searchOption.difficulty)}}</p>
+                        <p>企业：{{item.enterprise_name}}</p>
+                        <div class="bottom clearfix">
+                        <p class='oprator'>
+                            <el-link type="primary" class="el-icon-edit"  title="编辑"  @click="editDialog(item)"></el-link>
+                            <el-link :type="item.status > 0 ?'success':'info'"  v-bind:title="item.status > 0 ?'禁用':'启用'"  :class="item.status > 0 ? 'el-icon-open':'el-icon-turn-off'"  @click="changeStatus(item)"></el-link>
+                            <el-link type="danger" class="el-icon-delete" title="删除"  @click="del(item)"></el-link>
+                            <!--
+                            <el-link type="success"  class='el-icon-view' title="预览"></el-link>
+                            -->
+                            <el-link v-if="item.video" type="warning"  class='el-icon-video-play' title="播放" @click='playVideo(item)'></el-link>
+                        </p>                        
+                        </div>
+                    </div>
+                    </el-card>
+                </el-col>
+            </el-row>
 
-        <el-card class="box-card table-box">
-            <el-table :data="tableData" style="width: 100%" border>
+            <el-table  v-else :data="tableData" style="width: 100%" border>
             <el-table-column
                 type="index"
                 label="序号">
@@ -139,6 +165,13 @@
     </el-pagination>
     </el-card>
     <diaLogComponent ref='dialog'></diaLogComponent>
+        <el-dialog
+            title="视频播放"
+            :visible.sync="videoDialog.videoShow"
+            :before-close="handleClose"
+            >
+            <video :src="videoDialog.url" controls></video>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -154,6 +187,11 @@ export default {
     },
     data() {
       return {
+        viewModelByCard:false, 
+        videoDialog:{
+            videoShow:false,
+            url:'',
+        },
         searchItem: {
           subject: '',//学科id
           step: '',//阶段id
@@ -275,6 +313,22 @@ export default {
           return row.pic ? row.pic.map(v=>{
               return process.env.VUE_APP_BASEURL+v;
           }) : [];
+      },
+      imgPath(row){
+          if(row.select_options.length){
+              let imgArr = row.select_options.map(v=>{
+                  return v.image ? v.image : '';  //? v.image : 'src/assets/images/default.png';
+              }).filter(v=>v.length >0);
+              return  process.env.VUE_APP_BASEURL+(imgArr.length ? imgArr[Math.floor(Math.random()*imgArr.length)]:'/upload/20201113/f92d121f069ced73c53232dd13acb822.png');
+          }
+      },
+      playVideo(row){
+          this.videoDialog.videoShow=true;
+          this.videoDialog.url = process.env.VUE_APP_BASEURL + row.video;
+      },
+      handleClose(){
+          this.videoDialog.videoShow=false;
+          this.videoDialog.url='';
       }
 
     },
@@ -304,6 +358,10 @@ export default {
 
 <style lang="less">
     .question-container{
+        video{
+            width:640px;
+            height:360px;
+        }
         .search-box{
             margin-bottom:19px;
             .el-form-item__label{
@@ -339,6 +397,51 @@ export default {
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+        }
+
+        .materials{
+            display: flex;
+            justify-content: space-evenly;
+            flex-wrap: wrap;
+            // align-items: center;
+            .itm{
+                margin:10px;
+                width:300px;
+                font-size:14px;
+
+                .oprator{
+                    a{
+                        font-size:20px;
+                        margin-right:15px;
+                    }
+                }
+            }
+            
+            .bottom {
+                margin-top: 13px;
+                line-height: 12px;
+            }
+
+            .button {
+                padding: 0;
+                float: right;
+            }
+
+            .image {
+                width: 100%;
+                height:230px;
+                display: block;
+            }
+
+            .clearfix:before,
+            .clearfix:after {
+                display: table;
+                content: "";
+            }
+            
+            .clearfix:after {
+                clear: both
+            }
         }
     }
 </style>

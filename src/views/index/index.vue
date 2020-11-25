@@ -35,6 +35,10 @@
                     <i class="el-icon-notebook-2"></i>
                     <span slot="title">学科列表</span>
                 </el-menu-item>
+                <el-menu-item index="/index/role">
+                    <i class="el-icon-notebook-2"></i>
+                    <span slot="title">角色管理</span>
+                </el-menu-item>
             </el-menu>
         </el-aside>
         <el-main class='main'>
@@ -68,6 +72,8 @@ export default {
             }).then(() => {
                 userLogout(()=>{
                     token.delToken();
+                    // 删除Vuex中的数据
+                    this.$store.state.userInfo = undefined;
                     this.$message({
                         type: 'success',
                         message: '退出成功!',
@@ -83,7 +89,15 @@ export default {
     created() {
         //获取用户信息
         userInfo(res=>{
-            this.user = res;
+            if(res.status === 0){
+                this.$message.warning('你的号被封了,请联系管理员解封!!')
+                this.$router.push('/login');
+                return;
+            }
+            this.$store.state.userInfo = res.user;
+            this.$store.state.power = res.power;
+
+            this.user = res.user;
         });
     },
     computed: {

@@ -29,9 +29,12 @@
         </ul>
     </el-card>
     <!--年度月数据统计-->
-     <el-card class="box-card chart-box">
+    <!--
+             <el-card class="box-card chart-box">
         <yearMonth :yearMonthData="yearMonthData"></yearMonth>
     </el-card>
+    -->
+
     <!--饼状图统计-->
     <el-card class="box-card chart-box">
         <div class='chart' ref="questionchart">
@@ -55,14 +58,14 @@ import echarts from 'echarts'
 import {getTitleData,getQuestionStatistics,getRoleStatistics,getProvince,getUserDateData,getUserYearMonthData} from '@/api/chartView'
 import chartMap from '@/components/charts/map'
 import dateTable from '@/components/charts/table'
-import yearMonth from '@/components/charts/yearMonth'
+// import yearMonth from '@/components/charts/yearMonth'
 
 export default {
     name:'chart',
     components:{
         chartMap,
         dateTable,
-        yearMonth
+        // yearMonth
     },
     data(){
         return {

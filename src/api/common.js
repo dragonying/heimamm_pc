@@ -24,4 +24,4 @@ export const uploadVideo = {
     name: 'file', //上传文件字段名
     acceptType: ['mp4', 'avi'],//允许的类型
     sizeLimit: 100 * 1024 * 1024,//上传大小限制 B
-  }
+}
