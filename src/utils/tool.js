@@ -41,3 +41,41 @@ export function randomColor() {
     }
     return color;
 }
+
+
+//获取当前时间
+export function getCurrentTime() {
+    let date = new Date();
+    let year = date.getFullYear(); //获取当前年份
+    let mon = date.getMonth() + 1; //获取当前月份
+    let da = date.getDate(); //获取当前日
+    let h = date.getHours(); //获取小时
+    let m = date.getMinutes(); //获取分钟
+    let s = date.getSeconds(); //获取秒
+    let weeks = new Array(
+        "星期日",
+        "星期一",
+        "星期二",
+        "星期三",
+        "星期四",
+        "星期五",
+        "星期六"
+    );
+    let day = weeks[date.getDay()]; //获取当前星期几
+    if (mon < 10) {
+        mon = "0" + mon;
+    }
+    if (da < 10) {
+        da = "0" + da;
+    }
+    if (h < 10) {
+        h = "0" + h;
+    }
+    if (m < 10) {
+        m = "0" + m;
+    }
+    if (s < 10) {
+        s = "0" + s;
+    }
+    return year + '年' + mon + '月' + da + '日' + ' ' + h + ':' + m + ':' + s +' '+ day;
+}
