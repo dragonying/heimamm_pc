@@ -61,23 +61,9 @@ const router = new VueRouter({
                     }
                 },
                 {
-                    path: 'companys', component: resolve => require(['@/views/index/companys'], resolve), meta: {
-                        title: '企业列表'
-                    }
-                },
-                {
-                    path: 'subjects', component: resolve => require(['@/views/index/subjects'], resolve), meta: {
-                        title: '学科列表'
-                    }
-                },
-                {
-                    path: 'questions', component: resolve => require(['@/views/index/questions'], resolve), meta: {
-                        title: '题库列表'
-                    }
-                },
-                {
-                    path: 'role', component: resolve => require(['@/views/index/role'], resolve), meta: {
-                        title: '角色管理'
+                    path: 'aweme', component: resolve => require(['@/views/index/aweme'], resolve),
+                    meta: {
+                        title: '作品列表',
                     }
                 },
             ]

@@ -7,60 +7,21 @@ import request from '@/utils/request.js';
 export function getUserList(data = {}, callback = null) {
     return request({
         url: '/user/list',
-        method: 'get',
-        params: data
-    }, callback)
-}
-
-//更改状态
-export function setStatus(data = {}, callback = null) {
-    return request({
-        url: '/user/status',
         method: 'post',
         data: data
     }, callback)
 }
+
+
 
 //删除
 export function delUser(data = {}, callback = null) {
     return request({
-        url: '/user/remove',
-        method: 'post',
-        data: data
-    }, callback)
-}
-//新增
-export function addUser(data = {}, callback = null) {
-    return request({
-        url: '/user/add',
-        method: 'post',
-        data: data
-    }, callback)
-}
-//编辑
-export function editorUser(data = {}, callback = null) {
-    return request({
-        url: '/user/edit',
+        url: '/user/del',
         method: 'post',
         data: data
     }, callback)
 }
 
-//详情
-export function getInfo(data = {}, callback = null) {
-    return request({
-        url: '/info',
-        method: 'get',
-        params: data
-    }, callback)
-}
-
-//所有角色
-export function getRoles(callback = null) {
-    return request({
-        url: '/user/userRoles',
-        method: 'get',
-    }, callback)
-}
 
 

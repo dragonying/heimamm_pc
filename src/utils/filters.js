@@ -2,7 +2,7 @@
 import Vue from 'vue'
 import moment from 'moment'
 //日期过滤
-Vue.filter('formatDate',value=> moment(value).format('YYYY年MM月DD日'));
+Vue.filter('formatDate',value=> moment(value*1000).format('YYYY-MM-DD HH:mm:ss'));
 
 //文案转换 statusLabel = [{title:'hello',value:'world}]  status='world
 Vue.filter('txtExchange',(status,statusLabel)=>{

@@ -4,11 +4,11 @@ import request from '@/utils/request.js';
 
 
 //列表数据
-export function getSubjectList(data={},callback = null) {
+export function getAwemetList(data={},callback = null) {
     return request({
-        url: '/subject/list',
-        method: 'get',
-        params:data
+        url: '/aweme/list',
+        method: 'post',
+        data:data
     }, callback)
 }
 

@@ -23,21 +23,9 @@
                     <i class="el-icon-user"></i>
                     <span slot="title">用户列表</span>
                 </el-menu-item>
-                <el-menu-item index="/index/questions">
-                    <i class="el-icon-edit-outline"></i>
-                    <span slot="title">题库列表</span>
-                </el-menu-item>
-                <el-menu-item index="/index/companys">
-                    <i class="el-icon-office-building"></i>
-                    <span slot="title">企业列表</span>
-                </el-menu-item>
-                <el-menu-item index="/index/subjects">
-                    <i class="el-icon-notebook-2"></i>
-                    <span slot="title">学科列表</span>
-                </el-menu-item>
-                <el-menu-item index="/index/role">
-                    <i class="el-icon-notebook-2"></i>
-                    <span slot="title">角色管理</span>
+                <el-menu-item index="/index/aweme">
+                    <i class="el-icon-user"></i>
+                    <span slot="title">作品列表</span>
                 </el-menu-item>
             </el-menu>
         </el-aside>
@@ -59,7 +47,7 @@ export default {
     data() {
         return {
             isCollapse: false,//折叠导航
-            user:{},
+            user:{username:'龙英'},
         }
     },
     methods: {

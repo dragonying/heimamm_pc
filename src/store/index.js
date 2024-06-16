@@ -10,7 +10,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     // 默认没有值
-    userInfo: undefined,//存储用户信息
+    userInfo: {username:'龙英'},//存储用户信息
     power:[],//权限
   }
 })
