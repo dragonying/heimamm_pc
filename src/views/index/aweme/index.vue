@@ -33,7 +33,8 @@
                             @change="(e) => onChange(e, item.unique_id)"></el-checkbox>
                         <div class="videoBox">
                             <div class="videoInfo" v-if="item.video">
-                                <el-image class='cover' :src="item.video.cover" fit="cover" @click="toPlay(item.video)"></el-image>
+                                <el-image class='cover' :src="item.video.cover" fit="cover"
+                                    @click="toPlay(item.video)"></el-image>
                                 <el-image class='animated' :src="item.video.animated_cover || item.video.cover"
                                     fit="cover" @click="toPlay(item.video)"></el-image>
                                 <div class="statistics">
@@ -72,7 +73,7 @@
                         </div>
                         <div class="opt">
                             <el-button size="mini" type="info" @click="toDy(item.aweme_id)">抖音查看</el-button>
-                            <el-button size="mini" type="primary">查看数据</el-button>
+                            <el-button size="mini" type="primary" @click="toComment(item.aweme_id)">查看评论</el-button>
                             <el-button size="mini" type="success">更新数据</el-button>
                             <el-button size="mini" type="warning">批量分享</el-button>
                         </div>
@@ -117,7 +118,7 @@
                         </div>
                         <div class="opt">
                             <el-button size="mini" type="info" @click="toDy(item.aweme_id)">抖音查看</el-button>
-                            <el-button size="mini" type="primary">查看数据</el-button>
+                            <el-button size="mini" type="primary" @click="toComment(item.aweme_id)">查看评论</el-button>
                             <el-button size="mini" type="success">更新数据</el-button>
                             <el-button size="mini" type="warning">批量分享</el-button>
                         </div>
@@ -139,8 +140,8 @@
         <el-dialog title="音频播放" width="600" center :visible.sync="showMDialog" @closed="closeMHandler">
             <audio :src="music" v-if="music" controls></audio>
         </el-dialog>
-        <el-dialog title="评论信息" width="95%" center :visible.sync="showCDialog" @closed="closeMHandler">
-            <commentComponent />
+        <el-dialog title="评论信息" fullscreen center :visible.sync="showCDialog" @closed="closeCHandler">
+            <commentComponent ref="comment" />
         </el-dialog>
     </div>
 </template>
@@ -160,6 +161,7 @@ export default {
     data() {
         return {
             searchItem: {
+                author_user_id: null,
                 desc: null,
                 media_type: null,
             },
@@ -193,6 +195,10 @@ export default {
         }
     },
     methods: {
+        closeCHandler() {
+            this.showCDialog = false;
+            this.$refs.comment.reset();
+        },
         closeMHandler() {
             this.music = null;
             this.showMDialog = false;
@@ -204,6 +210,13 @@ export default {
         playMusic(music) {
             this.music = music;
             this.showMDialog = true;
+        },
+        toComment(aweme_id) {
+            this.showCDialog = true;
+            this.$nextTick(() => {
+                this.$refs.comment.search(aweme_id);
+            })
+
         },
         toPlay(video) {
             this.video = video;
@@ -228,6 +241,9 @@ export default {
         clear() {
             this.$refs.search.resetFields();
             this.page.currentPage = 1;//页码还原
+            if (this.$route.query.author_user_id) {
+                this.searchItem.author_user_id = this.$route.query.author_user_id;
+            }
             this.getAwemetList();
         },
         handleSizeChange(val) {
@@ -259,6 +275,9 @@ export default {
     computed: {
     },
     mounted() {
+        if (this.$route.query.author_user_id) {
+            this.searchItem.author_user_id = this.$route.query.author_user_id;
+        }
         this.getAwemetList();
     },
 }

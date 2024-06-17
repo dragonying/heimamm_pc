@@ -2,6 +2,9 @@
     <div class='comment-container'>
         <el-card class="box-card search-box">
             <el-form :inline="true" :model="searchItem" ref="search" class="demo-form-inline">
+                <!-- <el-form-item label="aweme_id" prop='aweme_id'>
+                    <el-input class='min-input' v-model.trim="searchItem.aweme_id"></el-input>
+                </el-form-item> -->
                 <el-form-item label="昵称" prop='nickname'>
                     <el-input class='min-input' v-model.trim="searchItem.nickname"></el-input>
                 </el-form-item>
@@ -22,7 +25,7 @@
         </el-card>
 
         <el-card class="box-card table-box">
-            <el-table :data="tableData" style="width: 100%" @selection-change="handleSelectionChange">
+            <el-table :data="tableData" size="small" style="width: 100%" @selection-change="handleSelectionChange">
                 <el-table-column type="selection" width="50">
                 </el-table-column>
                 <el-table-column prop="avatar" label="头像" align="center" width="80">
@@ -30,11 +33,21 @@
                         <el-image class='avatar' :src="scope.row.avatar" fit="cover"></el-image>
                     </template>
                 </el-table-column>
-                <el-table-column prop="nickname" label="昵称" min-width="100">
+                <el-table-column prop="nickname" label="昵称" min-width="120">
                 </el-table-column>
                 <el-table-column prop="unique_id" label="抖音号" align="center" min-width="80">
+                    <template slot-scope="scope">
+                        {{ scope.row.unique_id || scope.row.short_id }}
+                    </template>
                 </el-table-column>
                 <el-table-column prop="signature" label="签名" min-width="200">
+                    <template slot-scope="scope">
+                        <el-tooltip placement="top" :content="scope.row.signature">
+                            <div class="line2">
+                                {{ scope.row.signature }}
+                            </div>
+                        </el-tooltip>
+                    </template>
                 </el-table-column>
                 <el-table-column prop="ip_label" label="IP" align="center" width="50">
                 </el-table-column>
@@ -43,6 +56,13 @@
                 <el-table-column prop="reply_comment_total" label="回复" align="center" width="50">
                 </el-table-column>
                 <el-table-column prop="text" label="评论内容" min-width="200">
+                    <template slot-scope="scope">
+                        <el-tooltip placement="top" :content="scope.row.text">
+                            <div class="line2">
+                                {{ scope.row.text }}
+                            </div>
+                        </el-tooltip>
+                    </template>
                 </el-table-column>
                 <el-table-column label="评论时间" align="center" min-width="120">
                     <template slot-scope="scope">
@@ -71,44 +91,28 @@
     </div>
 </template>
 <script>
-import { getCompanyList,} from '@/api/company'
+import { getCommentList } from '@/api/aweme'
 
 export default {
-    name: 'companys-list',
+    name: 'comment-list',
     //组件
     components: {
     },
     data() {
         return {
             searchItem: {
+                aweme_id:null,
                 nickname: null,
                 unique_id: null,
                 ip_label: null,
                 text: null
             },
-            tableData: [
-                {
-                    "cid": "7374234638383858466",
-                    "text": "199白金的白天人多跑不满，凌晨4点也跑不了，只有700多有没有大流量卡的推荐啊",
-                    "aweme_id": "7374107095110552872",
-                    "create_time": 1716950549,
-                    "digg_count": 5,
-                    "uid": "3437496256702419",
-                    "short_id": "48368314298",
-                    "nickname": "断翅的飞鸟 ღ ♡ ❣ ❤ ❥ ❦  ❧",
-                    "unique_id": "48368314298",
-                    "sec_uid": "MS4wLjABAAAAHIHCtByFHIMXMIUnM3tSJqoBKc9nq21zJTG6GOzX_U56_07nVtu5lY1M4nd9Eoak",
-                    "ip_label": "山东",
-                    "avatar": "https://p3-pc.douyinpic.com/aweme/1080x1080/aweme-avatar/mosaic-legacy_31137000467a5f2cd2de4.jpeg?from=2956013662",
-                    "signature": "当你压力大到快要崩溃的时候，不要给别人讲，也不要觉得自己很委屈，因为没有人会心疼你，该干什么干什么",
-                    "reply_comment_total": 2
-                }
-            ],
+            tableData: [],
             page: {
                 currentPage: 1,//当前页
                 total: 0,//数据总条数
                 pageSize: 10,//每页条数
-                pageSizes: [10, 1, 20, 30, 40, 50],//每页条数选择
+                pageSizes: [10, 20, 30, 40, 50],//每页条数选择
                 layout: "total, sizes, prev, pager, next, jumper"//组件布局
             },
             multipleSelection: []
@@ -116,14 +120,23 @@ export default {
     },
     watch: {
         //解决分页 删除或修改时当前页无数据 bug
-        'page.total'(){
-            if(this.page.total==(this.page.currentPage-1)*this.page.pageSize && this.page.total!=0){
+        'page.total'() {
+            if (this.page.total == (this.page.currentPage - 1) * this.page.pageSize && this.page.total != 0) {
                 this.page.currentPage -= 1
                 this.getListData();
             }
         }
     },
     methods: {
+        search(aweme_id){
+            this.searchItem.aweme_id = aweme_id;
+            this.getListData();
+        },
+        reset(){
+            this.searchItem = this.$options.data().searchItem;
+            this.tableData = [];
+            this.page = this.$options.data().page;
+        },
         toggleSelection(rows) {
             if (rows) {
                 rows.forEach(row => {
@@ -142,7 +155,9 @@ export default {
         },
         clear() {
             this.page.currentPage = 1;
+            const aweme_id = this.searchItem.aweme_id;
             this.$refs.search.resetFields();
+            this.searchItem.aweme_id = aweme_id;
             this.getListData();
         },
         handleSizeChange(val) {
@@ -155,8 +170,8 @@ export default {
         },
         //搜索列表数据
         getListData() {
-            getCompanyList({
-                limit: this.page.pageSize,
+            getCommentList({
+                size: this.page.pageSize,
                 page: this.page.currentPage,
                 ...this.searchItem
             }, res => {
@@ -164,14 +179,11 @@ export default {
                 this.page.total = res.total
             })
         },
-    },
-    mounted() {
-        this.getListData()
-    },
+    }
 }
 </script>
 
-<style lang="less">
+<style lang="less" scope>
 .comment-container {
     .search-box {
         margin-bottom: 19px;
@@ -183,6 +195,25 @@ export default {
         .middle-input {
             width: 150px;
         }
+    }
+
+    .avatar {
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+    .line2 {
+        width: 100%;
+        overflow: hidden;
+        /*超出文本隐藏*/
+        text-overflow: ellipsis;
+        /*超出部分省略号显示 */
+        display: -webkit-box;
+        /*弹性盒模型*/
+        -webkit-box-orient: vertical;
+        /*上下垂直*/
+        -webkit-line-clamp: 2;
+        /*自定义行数*/
     }
 
     .el-pagination {

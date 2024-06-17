@@ -12,10 +12,10 @@ export function getAwemetList(data={},callback = null) {
     }, callback)
 }
 
-//更改状态
-export function setStatus(data={},callback = null) {
+//评论列表
+export function getCommentList(data={},callback = null) {
     return request({
-        url: '/subject/status',
+        url: '/comment/list',
         method: 'post',
         data:data
     }, callback)

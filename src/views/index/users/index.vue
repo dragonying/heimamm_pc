@@ -69,7 +69,7 @@
                         <p class="signature">签名：{{ item.signature }}</p>
                     </div>
                     <div class="opt">
-                        <el-button size="mini" type="primary">查看数据</el-button>
+                        <el-button size="mini" type="primary" @click="toAweme(item)">查看作品</el-button>
                         <el-button size="mini" type="success" @click="sendUpdate(item)">更新数据</el-button>
                         <el-button size="mini" type="warning" @click="sendShare(item)">批量分享</el-button>
                     </div>
@@ -127,6 +127,12 @@ export default {
         }
     },
     methods: {
+        toAweme(item){
+            this.$router.push({
+                path:"/index/aweme",
+                query:{author_user_id:item.uid}   
+            });
+        },
         sendUpdate(item) {
             ws.sendMessage({ cmd: 'updateUserInfo', content: item });
         },
