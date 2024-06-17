@@ -51,10 +51,10 @@
                                         <i class="el-icon-download">下载</i>
                                     </div>
                                     <p>像素：{{ item.video.ratio }}</p>
-                                    <p>尺寸：{{ item.video.with }} x {{ item.video.height }}</p>
+                                    <p>尺寸：{{ item.video.width }} x {{ item.video.height }}</p>
                                     <p>大小：{{ item.video.data_size }}</p>
                                     <p>时长：{{ item.duration }}</p>
-                                    <p>创建：{{ item.create_time }}</p>
+                                    <p>创建：{{ item.create_time | formatDate }}</p>
                                 </div>
                                 <div class="vd">
                                     <div class="opt">
@@ -72,9 +72,9 @@
                             <p class="desc">{{ item.desc }}</p>
                         </div>
                         <div class="opt">
-                            <el-button size="mini" type="info" @click="toDy(item.aweme_id)">抖音查看</el-button>
+                            <el-button size="mini" type="info" @click="toDy(item)">抖音查看</el-button>
                             <el-button size="mini" type="primary" @click="toComment(item.aweme_id)">查看评论</el-button>
-                            <el-button size="mini" type="success">更新数据</el-button>
+                            <el-button size="mini" type="success" @click="getComment(item)">更新数据</el-button>
                             <el-button size="mini" type="warning">批量分享</el-button>
                         </div>
                     </div>
@@ -99,7 +99,7 @@
                                     </div>
                                     <p>数量：{{ item.images.length }}</p>
                                     <p>时长：{{ item.duration }}</p>
-                                    <p>创建：{{ item.create_time }}</p>
+                                    <p>创建：{{ item.create_time | formatDate }}</p>
                                 </div>
                                 <div class="vd">
                                     <div class="opt">
@@ -117,9 +117,9 @@
                             <p class="desc">{{ item.desc }}</p>
                         </div>
                         <div class="opt">
-                            <el-button size="mini" type="info" @click="toDy(item.aweme_id)">抖音查看</el-button>
+                            <el-button size="mini" type="info" @click="toDy(item)">抖音查看</el-button>
                             <el-button size="mini" type="primary" @click="toComment(item.aweme_id)">查看评论</el-button>
-                            <el-button size="mini" type="success">更新数据</el-button>
+                            <el-button size="mini" type="success" @click="getComment(item)">更新数据</el-button>
                             <el-button size="mini" type="warning">批量分享</el-button>
                         </div>
                     </div>
@@ -149,7 +149,9 @@
 import { getAwemetList } from '@/api/aweme'
 import diaLogComponent from '@/views/index/aweme/add'
 import commentComponent from '@/views/index/aweme/comment'
-
+import WebSocketClientManager from '@/utils/WebSocketClientManager';
+import bus from '@/utils/bus';
+const ws = WebSocketClientManager.getInstance();
 
 export default {
     name: 'user-list',
@@ -195,6 +197,13 @@ export default {
         }
     },
     methods: {
+        getComment(item) {
+            bus.$emit('openLog');
+            const { aweme_id, media_type } = item;
+            this.$nextTick(() => {
+                ws.sendMessage({ cmd: 'getComment', content: `${process.env.VUE_APP_DOUYIN_HOST}/${media_type == 4 ? 'video' : 'note'}/${aweme_id}` });
+            })
+        },
         closeCHandler() {
             this.showCDialog = false;
             this.$refs.comment.reset();
@@ -223,8 +232,9 @@ export default {
             this.showDialog = true;
             window.open(video.play_url, '_blank');
         },
-        toDy(sec_uid) {
-            window.open(`${process.env.VUE_APP_DOUYIN_HOST}/video/${sec_uid}`, '_blank');
+        toDy(item) {
+            const { aweme_id, media_type } = item;
+            window.open(`${process.env.VUE_APP_DOUYIN_HOST}/${media_type == 4 ? 'video' : 'note'}/${aweme_id}`, '_blank');
         },
         onChange(e, unique_id) {
             const idx = this.selectedRows.indexOf(unique_id);
@@ -278,7 +288,11 @@ export default {
         if (this.$route.query.author_user_id) {
             this.searchItem.author_user_id = this.$route.query.author_user_id;
         }
+        bus.$on('getComment', value => {
+            this.getAwemetList();
+        })
         this.getAwemetList();
+
     },
 }
 </script>
@@ -383,12 +397,15 @@ export default {
 
                 .statistics {
                     position: absolute;
-                    bottom: 10px;
+                    bottom: 0;
                     left: 0;
                     right: 0;
                     color: #fff;
                     display: flex;
                     font-weight: bold;
+                    background: rgba(0, 0, 0, .6);
+                    padding: 10px 0;
+                    border-radius: 0 0 5px 5px;
 
                     &>* {
                         flex: 1;

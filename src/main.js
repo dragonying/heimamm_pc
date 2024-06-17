@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import App from './App.vue'
-
+import bus from '@/utils/bus';
 //将路由抽离
 // import router from './router/index'
 import router from '@/router/index' //@符号表示/src的绝对路径  html也是@，js也是@,css ~@
@@ -32,18 +32,18 @@ WebSocketClientManager.getInstance().addConnectStatusListener((status) => {
   });
 });
 
-WebSocketClientManager.getInstance().addMessageListener((msg) => {
-  console.log(msg)
-  const { success, type, data } = msg;
+WebSocketClientManager.getInstance().addMessageListener((res) => {
+  const { success, type, data } = res;
   if (type == 'tip') {
-    success ? Notification.success(`指令接收成功：${JSON.stringify(data)}`) : Notification.error(data);
+    success ? Notification.success(data) : Notification.error(data);
   } else {
-    //
-  }
-
-
-  if (msg.type === 'device_change') {
-    // store.dispatch('device/updateOnlineDevices');
+    const { cmd, msg, type } = data;
+    if (cmd) {
+      bus.$emit(cmd);
+      setTimeout(() => {
+        bus.$emit('closeLog');
+      }, 1000)
+    }
   }
 });
 

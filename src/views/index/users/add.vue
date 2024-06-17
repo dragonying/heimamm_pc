@@ -2,8 +2,8 @@
     <!-- 新增或编辑用户 -->
     <el-dialog title="采集新用户" :width='width' center :visible.sync="showDialog" @closed="closeHandler">
         <el-form :model="editForm" :rules="rules" ref='editForm' :label-width='labelWidth'>
-            <el-form-item label="抖音号" prop="unique_id">
-                <el-input v-model.trim="editForm.unique_id"></el-input>
+            <el-form-item label="抖音信息" prop="infoKeyword">
+                <el-input v-model.trim="editForm.infoKeyword" placeholder="请输入抖音号或主页地址"></el-input>
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -14,8 +14,6 @@
 </template>
 
 <script>
-import { addUser } from '@/api/user'
-
 export default {
     name: 'user-dialog',
     data() {
@@ -24,11 +22,11 @@ export default {
             labelWidth: '85px',
             width: '600px',
             editForm: {
-                unique_id: null
+                infoKeyword: null
             },
             rules: {
-                unique_id: [
-                    { required: true, message: '请上输入抖音号', trigger: 'blur' },
+                infoKeyword: [
+                    { required: true, message: '请输入抖音号或主页地址', trigger: 'blur' },
                 ]
             }
         }
@@ -37,12 +35,9 @@ export default {
         onSubmit() {
             this.$refs.editForm.validate(valid => {
                 if (valid) {
-                    addUser(this.editForm, () => {
-                        this.$message.success('添加成功');
-                        this.close();
-                        this.$parent.getUserList();
-                    })
-
+                    this.$message.success('添加成功');
+                    this.$parent.sendUpdate({infoKeyword:this.editForm.infoKeyword});
+                    this.close();
                 } else {
                     this.$message.warning('请输入正确的信息！');
                 }
@@ -54,7 +49,6 @@ export default {
         },
         //关闭弹窗时候触发，清空表单数据
         closeHandler() {
-            this.editForm.unique_id = '';
             //如果首次点开编辑，再执行该方法无法清空，数据会还原为第一次显示的内容
             this.$refs.editForm.resetFields();//只能清空含有prop属性的表单
         },

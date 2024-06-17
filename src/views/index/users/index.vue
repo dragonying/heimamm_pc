@@ -31,7 +31,7 @@
                     @click="addDialog">创建任务</el-button>
             </div>
         </el-card>
-        <el-card class="box-card table-box">
+        <el-card class="box-card table-box" v-loading="loading">
             <div class="user-card">
                 <el-card class="userBox" v-for="(item, index) in tableData" :key="index">
                     <el-checkbox class="check" size="mini" :checked="selectedRows.includes(item.unique_id)"
@@ -72,6 +72,7 @@
                         <el-button size="mini" type="primary" @click="toAweme(item)">查看作品</el-button>
                         <el-button size="mini" type="success" @click="sendUpdate(item)">更新数据</el-button>
                         <el-button size="mini" type="warning" @click="sendShare(item)">批量分享</el-button>
+                        <el-button size="mini" type="danger" @click="delUser(item.uid)">删除</el-button>
                     </div>
                 </el-card>
             </div>
@@ -84,9 +85,10 @@
     </div>
 </template>
 <script>
-import { getUserList } from '@/api/user'
+import { getUserList, delUser } from '@/api/user'
 import diaLogComponent from '@/views/index/users/add'
 import WebSocketClientManager from '@/utils/WebSocketClientManager';
+import bus from '@/utils/bus';
 const ws = WebSocketClientManager.getInstance();
 export default {
     name: 'user-list',
@@ -103,6 +105,7 @@ export default {
                 ip_location: null
             },
             tableData: [],
+            loading: false,
             page: {
                 currentPage: 1,//当前页
                 total: 0,//数据总条数
@@ -127,17 +130,23 @@ export default {
         }
     },
     methods: {
-        toAweme(item){
+        toAweme(item) {
             this.$router.push({
-                path:"/index/aweme",
-                query:{author_user_id:item.uid}   
+                path: "/index/aweme",
+                query: { author_user_id: item.uid }
             });
         },
         sendUpdate(item) {
-            ws.sendMessage({ cmd: 'updateUserInfo', content: item });
+            bus.$emit('openLog');
+            this.$nextTick(() => {
+                ws.sendMessage({ cmd: 'getUserInfo', content: item });
+            })
         },
         sendShare(item) {
-            ws.sendMessage({ cmd: 'shareUserInfo', content: item });
+            bus.$emit('openLog');
+            this.$nextTick(() => {
+                ws.sendMessage({ cmd: 'shareUserInfo', content: item });
+            })
         },
         toDy(sec_uid) {
             window.open(`${process.env.VUE_APP_DOUYIN_HOST}/user/${sec_uid}`, '_blank');
@@ -148,6 +157,22 @@ export default {
         },
         addDialog() {
             this.$refs.dialog.showDialog = true;
+        },
+        delUser(uid) {
+            this.$confirm('确认要删除?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                delUser({ uids: Array.isArray(uid) ? uid : [uid] }).then(_ => {
+                    this.handleCurrentChange(1);
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                })
+
+            })
         },
         onSubmit() {
             this.page.currentPage = 1;//页码还原
@@ -169,6 +194,7 @@ export default {
         },
         //搜索列表数据
         getUserList() {
+            this.loading = true;
             getUserList({
                 size: this.page.pageSize,
                 page: this.page.currentPage,
@@ -176,6 +202,7 @@ export default {
             }, res => {
                 this.tableData = res.items;
                 this.page.total = res.total
+                this.loading = false;
             })
         },
         preview(row) {
@@ -195,6 +222,11 @@ export default {
     mounted() {
         this.getUserList();
     },
+    created() {
+        bus.$on('getUserInfo', value => {
+            this.getUserList();
+        })
+    }
 }
 </script>
 
