@@ -231,9 +231,9 @@ export default {
         },
         multiUpdate() {
             const contents = this.selectedRows.map(aweme_id => {
-                const { media_type } = this.tableData.find(o => o.aweme_id == aweme_id);
-                return `${process.env.VUE_APP_DOUYIN_HOST}/${media_type == 4 ? 'video' : 'note'}/${aweme_id}`;
-            });
+                const { media_type } = this.tableData.find(o => o.aweme_id == aweme_id) || {};
+                return media_type ? `${process.env.VUE_APP_DOUYIN_HOST}/${media_type == 4 ? 'video' : 'note'}/${aweme_id}` : false;
+            }).filter(Boolean);
             if (contents.length) {
                 bus.$emit('openLog');
                 this.$nextTick(() => {
