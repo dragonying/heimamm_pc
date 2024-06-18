@@ -23,7 +23,7 @@ Vue.filter('formatGender', v => {
 });
 
 Vue.filter('formatNumber', v => {
-   return v * 1 > 10000 ? (v * 1 / 10000).toFixed(2) + '万' : v;
+   return v * 1 > 10000 ? (v * 1 / 10000).toFixed(2) + 'w' : v;
 });
 Vue.filter('formatSeconds', milliseconds => {
    // 初始化变量
