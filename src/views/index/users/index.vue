@@ -17,6 +17,12 @@
                             :key="itm.value"></el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="采集状态" prop="got">
+                    <el-select class='min-input' v-model="searchItem.got">
+                        <el-option v-for="itm in got_typeLabel" :label="itm.title" :value="itm.value"
+                            :key="itm.value"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">搜索</el-button>
                     <el-button @click='clear'>清除</el-button>
@@ -27,15 +33,19 @@
         <el-card class="box-card table-box">
             <div class="checkOpt">
                 <div>已选择 {{ selectedRows.length }} 项</div>
-                <el-button type="danger" size="mini" :disabled="!selectedRows.length" icon="el-icon-upload"
+                <el-button type="primary" size="mini" :disabled="!selectedRows.length" icon="el-icon-upload"
                     @click="addDialog">创建任务</el-button>
+                <el-button type="danger" size="mini" :disabled="!selectedRows.length"
+                    @click="multiDel">批量删除务</el-button>
+                <el-button type="success" size="mini" :disabled="!selectedRows.length"
+                    @click="multiUpdate">批量更新</el-button>
             </div>
         </el-card>
         <el-card class="box-card table-box" v-loading="loading">
             <div class="user-card">
                 <el-card class="userBox" v-for="(item, index) in tableData" :key="index">
-                    <el-checkbox class="check" size="mini" :checked="selectedRows.includes(item.unique_id)"
-                        @change="(e) => onChange(e, item.unique_id)"></el-checkbox>
+                    <el-checkbox class="check" size="mini" :checked="selectedRows.includes(item.sec_uid)" :key="item.sec_uid"
+                        @change="(e) => onChange(e, item.sec_uid)"></el-checkbox>
                     <div class="uheader" :style="{ backgroundImage: 'url(' + item.cover || '#fff' + ')' }">
                         <div class="uhbox">
                             <el-image class='avatar' :src="item.avatar" fit="cover"
@@ -43,30 +53,33 @@
                             <div class="dtl">
                                 <span class="nickname">{{ item.nickname }}</span>
                                 <span>uid：{{ item.uid }}</span>
-                                <span>{{ item.ip_location }}</span>
+                                <span>{{ item.ip_location || 'IP属地：' }}</span>
                                 <div class="dtlgroup">
                                     <span>性别：{{ item.gender | formatGender }}</span>
-                                    <span>年龄：{{ item.user_age }}</span>
+                                    <span>年龄：{{ item.user_age | formatAge }}</span>
                                 </div>
                                 <div class="dtlgroup">
                                     <span>籍贯：{{ item.province }} {{ item.city }}</span>
                                     <span>学校：{{ item.school_name }}</span>
                                 </div>
                             </div>
+                            <i class="el-icon-s-opportunity" v-if="item.got"></i>
                         </div>
                     </div>
                     <div class="uinfo">
                         <span>抖音号：{{ item.unique_id }}</span>
-                        <span>粉丝：{{ item.follower_count }}</span>
-                        <span>获赞：{{ item.total_favorited }}</span>
+                        <span>粉丝：{{ item.follower_count | formatNumber }}</span>
+                        <span>获赞：{{ item.total_favorited | formatNumber }}</span>
                     </div>
                     <div class="uinfo">
-                        <span>关注：{{ item.following_count }}</span>
-                        <span>喜欢：{{ item.favoriting_count }}</span>
-                        <span>作品：{{ item.aweme_count }}</span>
+                        <span>关注：{{ item.following_count | formatNumber }}</span>
+                        <span>喜欢：{{ item.favoriting_count | formatNumber }}</span>
+                        <span>作品：{{ item.aweme_count | formatNumber }}</span>
                     </div>
                     <div class="uinfo">
-                        <p class="signature">签名：{{ item.signature }}</p>
+                        <el-tooltip placement="top" :content="item.signature">
+                            <p class="signature">签名：{{ item.signature }}</p>
+                        </el-tooltip>
                     </div>
                     <div class="opt">
                         <el-button size="mini" type="primary" @click="toAweme(item)">查看作品</el-button>
@@ -102,7 +115,8 @@ export default {
                 nickname: null,
                 unique_id: null,
                 gender: null,
-                ip_location: null
+                ip_location: null,
+                got: null
             },
             tableData: [],
             loading: false,
@@ -116,6 +130,10 @@ export default {
             genderLabel: [
                 { title: '男', value: 1 },
                 { title: '女', value: 2 },
+            ],
+            got_typeLabel: [
+                { title: '已采集', value: 'y' },
+                { title: '未采集', value: 'n' },
             ],
             selectedRows: []
         }
@@ -142,6 +160,38 @@ export default {
                 ws.sendMessage({ cmd: 'getUserInfo', content: item });
             })
         },
+        multiDel() {
+            this.$confirm('确认要删除?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                delUser({
+                    uids: this.selectedRows.map(sec_uid => {
+                        return this.tableData.find(o => o.sec_uid == sec_uid)?.uid;
+                    })
+                }).then(_ => {
+                    this.handleCurrentChange(1);
+                    this.selectedRows = [];
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                })
+
+            })
+        },
+        multiUpdate() {
+            const contents = this.selectedRows.map(sec_uid => {
+                return this.tableData.find(o => o.sec_uid == sec_uid);
+            });
+            if (contents) {
+                bus.$emit('openLog');
+                this.$nextTick(() => {
+                    ws.sendMessage({ cmd: 'getUserInfo', content: contents });
+                })
+            }
+        },
         sendShare(item) {
             bus.$emit('openLog');
             this.$nextTick(() => {
@@ -151,9 +201,9 @@ export default {
         toDy(sec_uid) {
             window.open(`${process.env.VUE_APP_DOUYIN_HOST}/user/${sec_uid}`, '_blank');
         },
-        onChange(e, unique_id) {
-            const idx = this.selectedRows.indexOf(unique_id);
-            idx > -1 ? this.selectedRows.splice(idx, 1) : this.selectedRows.push(unique_id);
+        onChange(e, sec_uid) {
+            const idx = this.selectedRows.indexOf(sec_uid);
+            idx > -1 ? this.selectedRows.splice(idx, 1) : this.selectedRows.push(sec_uid);
         },
         addDialog() {
             this.$refs.dialog.showDialog = true;
@@ -213,9 +263,7 @@ export default {
 
     },
     filters: {
-        formatGender(gender) {
-            return gender == 1 ? '男' : gender == 2 ? '女' : '未知';
-        }
+
     },
     computed: {
     },
@@ -224,6 +272,7 @@ export default {
     },
     created() {
         bus.$on('getUserInfo', value => {
+            this.selectedRows = [];
             this.getUserList();
         })
     }
@@ -295,6 +344,16 @@ export default {
                 margin-bottom: 8px;
                 padding: 10px;
                 background: rgba(255, 255, 255, .8);
+                position: relative;
+
+                .el-icon-s-opportunity {
+                    position: absolute;
+                    right: 5px;
+                    top: 5px;
+                    font-size: 30px;
+                    font-weight: bold;
+                    color: yellow;
+                }
 
                 .dtl {
                     font-size: 12px;
@@ -331,10 +390,19 @@ export default {
             }
 
             .signature {
+                height: 33px;
                 color: #535360b8;
+                width: 100%;
                 overflow: hidden;
+                /*超出文本隐藏*/
                 text-overflow: ellipsis;
-                white-space: nowrap;
+                /*超出部分省略号显示 */
+                display: -webkit-box;
+                /*弹性盒模型*/
+                -webkit-box-orient: vertical;
+                /*上下垂直*/
+                -webkit-line-clamp: 2;
+                /*自定义行数*/
             }
         }
 

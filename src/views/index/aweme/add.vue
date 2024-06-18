@@ -14,8 +14,6 @@
 </template>
 
 <script>
-import { addUser } from '@/api/user'
-
 export default {
     name: 'user-dialog',
     data() {
@@ -37,12 +35,9 @@ export default {
         onSubmit() {
             this.$refs.editForm.validate(valid => {
                 if (valid) {
-                    addUser(this.editForm, () => {
-                        this.$message.success('添加成功');
-                        this.close();
-                        this.$parent.getUserList();
-                    })
-
+                    this.$message.success('添加成功');
+                    this.$parent.getComment({ shareLink: this.editForm.shareLink });
+                    this.close();
                 } else {
                     this.$message.warning('请输入正确的信息！');
                 }

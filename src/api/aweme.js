@@ -22,9 +22,9 @@ export function getCommentList(data={},callback = null) {
 }
 
 //删除
-export function delSubject(data={},callback = null) {
+export function delAweme(data={},callback = null) {
     return request({
-        url: '/subject/remove',
+        url: '/aweme/del',
         method: 'post',
         data:data
     }, callback)

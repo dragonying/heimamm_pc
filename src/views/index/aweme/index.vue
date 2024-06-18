@@ -11,6 +11,12 @@
                             :key="itm.value"></el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="采集状态" prop="got">
+                    <el-select class='min-input' v-model="searchItem.got">
+                        <el-option v-for="itm in got_typeLabel" :label="itm.title" :value="itm.value"
+                            :key="itm.value"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">搜索</el-button>
                     <el-button @click='clear'>清除</el-button>
@@ -21,16 +27,20 @@
         <el-card class="box-card table-box">
             <div class="checkOpt">
                 <div>已选择 {{ selectedRows.length }} 项</div>
-                <el-button type="danger" size="mini" :disabled="!selectedRows.length" icon="el-icon-upload"
+                <el-button type="primary" size="mini" :disabled="!selectedRows.length" icon="el-icon-upload"
                     @click="addDialog">创建任务</el-button>
+                <el-button type="success" size="mini" :disabled="!selectedRows.length"
+                    @click="multiUpdate">批量更新</el-button>
+                <el-button type="danger" size="mini" :disabled="!selectedRows.length"
+                    @click="multiDel">批量删除</el-button>
             </div>
         </el-card>
         <el-card class="box-card table-box">
-            <div class="user-card">
+            <div class="user-card" v-loading="loading">
                 <el-card class="userBox" v-for="(item, index) in tableData" :key="index">
                     <div v-if="item.media_type == 4">
-                        <el-checkbox class="check" size="mini" :checked="selectedRows.includes(item.unique_id)"
-                            @change="(e) => onChange(e, item.unique_id)"></el-checkbox>
+                        <el-checkbox class="check" size="mini" :checked="selectedRows.includes(item.aweme_id)" :key="item.aweme_id"
+                            @change="(e) => onChange(e, item.aweme_id)"></el-checkbox>
                         <div class="videoBox">
                             <div class="videoInfo" v-if="item.video">
                                 <el-image class='cover' :src="item.video.cover" fit="cover"
@@ -38,11 +48,13 @@
                                 <el-image class='animated' :src="item.video.animated_cover || item.video.cover"
                                     fit="cover" @click="toPlay(item.video)"></el-image>
                                 <div class="statistics">
-                                    <i class="el-icon-thumb">{{ item.statistics.digg_count }}</i>
-                                    <i class="el-icon-chat-dot-round">{{ item.statistics.comment_count }}</i>
-                                    <i class="el-icon-star-off">{{ item.statistics.collect_count }}</i>
-                                    <i class="el-icon-position">{{ item.statistics.share_count }}</i>
+                                    <i class="el-icon-thumb">{{ item.statistics.digg_count | formatNumber }}</i>
+                                    <i class="el-icon-chat-dot-round">{{ item.statistics.comment_count | formatNumber
+                                        }}</i>
+                                    <i class="el-icon-star-off">{{ item.statistics.collect_count | formatNumber }}</i>
+                                    <i class="el-icon-position">{{ item.statistics.share_count | formatNumber }}</i>
                                 </div>
+                                <i class="el-icon-s-opportunity" v-if="item.got"></i>
                             </div>
                             <div class="detail">
                                 <div class="vd">
@@ -52,8 +64,8 @@
                                     </div>
                                     <p>像素：{{ item.video.ratio }}</p>
                                     <p>尺寸：{{ item.video.width }} x {{ item.video.height }}</p>
-                                    <p>大小：{{ item.video.data_size }}</p>
-                                    <p>时长：{{ item.duration }}</p>
+                                    <p>大小：{{ item.video.data_size | formatFileSize }}</p>
+                                    <p>时长：{{ item.duration | formatSeconds }}</p>
                                     <p>创建：{{ item.create_time | formatDate }}</p>
                                 </div>
                                 <div class="vd">
@@ -69,28 +81,33 @@
                             </div>
                         </div>
                         <div class="uinfo">
-                            <p class="desc">{{ item.desc }}</p>
+                            <el-tooltip placement="top" :content="item.desc">
+                                <p class="desc">{{ item.desc }}</p>
+                            </el-tooltip>
                         </div>
                         <div class="opt">
                             <el-button size="mini" type="info" @click="toDy(item)">抖音查看</el-button>
                             <el-button size="mini" type="primary" @click="toComment(item.aweme_id)">查看评论</el-button>
                             <el-button size="mini" type="success" @click="getComment(item)">更新数据</el-button>
                             <el-button size="mini" type="warning">批量分享</el-button>
+                            <el-button size="mini" type="danger" @click="delAweme(item.aweme_id)">删除</el-button>
                         </div>
                     </div>
                     <div v-else>
-                        <el-checkbox class="check" size="mini" :checked="selectedRows.includes(item.unique_id)"
-                            @change="(e) => onChange(e, item.unique_id)"></el-checkbox>
+                        <el-checkbox class="check" size="mini" :checked="selectedRows.includes(item.aweme_id)" :key="item.aweme_id"
+                            @change="(e) => onChange(e, item.aweme_id)"></el-checkbox>
                         <div class="videoBox">
                             <div class="videoInfo" v-if="item.video">
                                 <el-image class='img' :src="item.video.cover" fit="cover"
                                     :preview-src-list="item.images"></el-image>
                                 <div class="statistics">
-                                    <i class="el-icon-thumb">{{ item.statistics.digg_count }}</i>
-                                    <i class="el-icon-chat-dot-round">{{ item.statistics.comment_count }}</i>
-                                    <i class="el-icon-star-off">{{ item.statistics.collect_count }}</i>
-                                    <i class="el-icon-position">{{ item.statistics.share_count }}</i>
+                                    <i class="el-icon-thumb">{{ item.statistics.digg_count | formatNumber }}</i>
+                                    <i class="el-icon-chat-dot-round">{{ item.statistics.comment_count | formatNumber
+                                        }}</i>
+                                    <i class="el-icon-star-off">{{ item.statistics.collect_count | formatNumber }}</i>
+                                    <i class="el-icon-position">{{ item.statistics.share_count | formatNumber }}</i>
                                 </div>
+                                <i class="el-icon-s-opportunity" v-if="item.got"></i>
                             </div>
                             <div class="detail">
                                 <div class="vd">
@@ -98,7 +115,7 @@
                                         <h4>图片信息</h4>
                                     </div>
                                     <p>数量：{{ item.images.length }}</p>
-                                    <p>时长：{{ item.duration }}</p>
+                                    <p>时长：{{ item.duration | formatSeconds }}</p>
                                     <p>创建：{{ item.create_time | formatDate }}</p>
                                 </div>
                                 <div class="vd">
@@ -114,7 +131,9 @@
                             </div>
                         </div>
                         <div class="uinfo">
-                            <p class="desc">{{ item.desc }}</p>
+                            <el-tooltip placement="top" :content="item.desc">
+                                <p class="desc">{{ item.desc }}</p>
+                            </el-tooltip>
                         </div>
                         <div class="opt">
                             <el-button size="mini" type="info" @click="toDy(item)">抖音查看</el-button>
@@ -146,7 +165,7 @@
     </div>
 </template>
 <script>
-import { getAwemetList } from '@/api/aweme'
+import { getAwemetList,delAweme } from '@/api/aweme'
 import diaLogComponent from '@/views/index/aweme/add'
 import commentComponent from '@/views/index/aweme/comment'
 import WebSocketClientManager from '@/utils/WebSocketClientManager';
@@ -162,10 +181,12 @@ export default {
     },
     data() {
         return {
+            loading: false,
             searchItem: {
                 author_user_id: null,
                 desc: null,
                 media_type: null,
+                got: null
             },
             tableData: [],
             page: {
@@ -178,6 +199,10 @@ export default {
             media_typeLabel: [
                 { title: '视频', value: 4 },
                 { title: '图文', value: 2 },
+            ],
+            got_typeLabel: [
+                { title: '已采集', value: 'y' },
+                { title: '未采集', value: 'n' },
             ],
             selectedRows: [],
             showDialog: false,
@@ -199,10 +224,42 @@ export default {
     methods: {
         getComment(item) {
             bus.$emit('openLog');
-            const { aweme_id, media_type } = item;
+            const { aweme_id, media_type, shareLink } = item;
             this.$nextTick(() => {
-                ws.sendMessage({ cmd: 'getComment', content: `${process.env.VUE_APP_DOUYIN_HOST}/${media_type == 4 ? 'video' : 'note'}/${aweme_id}` });
+                ws.sendMessage({ cmd: 'getComment', content: shareLink ? shareLink : `${process.env.VUE_APP_DOUYIN_HOST}/${media_type == 4 ? 'video' : 'note'}/${aweme_id}` });
             })
+        },
+        multiUpdate() {
+            const contents = this.selectedRows.map(aweme_id => {
+                const { media_type } = this.tableData.find(o => o.aweme_id == aweme_id);
+                return `${process.env.VUE_APP_DOUYIN_HOST}/${media_type == 4 ? 'video' : 'note'}/${aweme_id}`;
+            });
+            if (contents.length) {
+                bus.$emit('openLog');
+                this.$nextTick(() => {
+                    ws.sendMessage({ cmd: 'getComment', content: contents });
+                })
+            }
+        },
+        delAweme(aweme_id){
+            this.$confirm('确认要删除?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                delAweme({ aweme_ids: Array.isArray(aweme_id) ? aweme_id : [aweme_id] }).then(_ => {
+                    this.handleCurrentChange(1);
+                    Array.isArray(aweme_id) && (this.selectedRows = []);
+                    this.$message({
+                        type: 'success',
+                        message: '删除成功!'
+                    });
+                })
+
+            })
+        },
+        multiDel(){
+           this.delAweme(this.selectedRows);
         },
         closeCHandler() {
             this.showCDialog = false;
@@ -236,9 +293,9 @@ export default {
             const { aweme_id, media_type } = item;
             window.open(`${process.env.VUE_APP_DOUYIN_HOST}/${media_type == 4 ? 'video' : 'note'}/${aweme_id}`, '_blank');
         },
-        onChange(e, unique_id) {
-            const idx = this.selectedRows.indexOf(unique_id);
-            idx > -1 ? this.selectedRows.splice(idx, 1) : this.selectedRows.push(unique_id);
+        onChange(e, aweme_id) {
+            const idx = this.selectedRows.indexOf(aweme_id);
+            idx > -1 ? this.selectedRows.splice(idx, 1) : this.selectedRows.push(aweme_id);
         },
         addDialog() {
             this.$refs.dialog.showDialog = true;
@@ -266,6 +323,7 @@ export default {
         },
         //搜索列表数据
         getAwemetList() {
+            this.loading = true;
             getAwemetList({
                 size: this.page.pageSize,
                 page: this.page.currentPage,
@@ -273,6 +331,7 @@ export default {
             }, res => {
                 this.tableData = res.items;
                 this.page.total = res.total
+                this.loading = false;
             })
         }
 
@@ -289,6 +348,7 @@ export default {
             this.searchItem.author_user_id = this.$route.query.author_user_id;
         }
         bus.$on('getComment', value => {
+            this.selectedRows = [];
             this.getAwemetList();
         })
         this.getAwemetList();
@@ -397,6 +457,7 @@ export default {
 
                 .statistics {
                     position: absolute;
+                    font-size: 14px;
                     bottom: 0;
                     left: 0;
                     right: 0;
@@ -411,6 +472,15 @@ export default {
                         flex: 1;
                         padding-left: 10px;
                     }
+                }
+
+                .el-icon-s-opportunity {
+                    position: absolute;
+                    right: 5px;
+                    top: 5px;
+                    font-size: 30px;
+                    font-weight: bold;
+                    color: yellow;
                 }
             }
         }
