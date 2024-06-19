@@ -167,13 +167,14 @@ export default {
 
 .hd {
     display: flex;
+    flex-wrap: wrap;
     padding: 0 20px 20px;
 
     .avatar {
-        width: 60px !important;
-        height: 60px !important;
+        width: 30px !important;
+        height: 30px !important;
         border-radius: 50%;
-        margin-right: 5px;
+        margin: 3px;
     }
 }
 

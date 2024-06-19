@@ -148,7 +148,7 @@ export default {
                 currentPage: 1,//当前页
                 total: 0,//数据总条数
                 pageSize: 10,//每页条数
-                pageSizes: [10, 20, 30, 40, 50],//每页条数选择
+                pageSizes: [10, 20, 30, 40, 50,100,200,300],//每页条数选择
                 layout: "total, sizes, prev, pager, next, jumper"//组件布局
             },
             multipleSelection: [],

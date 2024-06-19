@@ -17,6 +17,12 @@
                             :key="itm.value"></el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="评论数" prop="comment_sort">
+                    <el-select class='min-input' v-model="searchItem.comment_sort">
+                        <el-option v-for="itm in comment_sortLabel" :label="itm.title" :value="itm.value"
+                            :key="itm.value"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">搜索</el-button>
                     <el-button @click='clear'>清除</el-button>
@@ -32,6 +38,7 @@
                 <el-button type="success" size="mini" :disabled="!selectedRows.length"
                     @click="multiUpdate">批量更新</el-button>
                 <el-button type="danger" size="mini" :disabled="!selectedRows.length" @click="multiDel">批量删除</el-button>
+                <el-button v-if="searchItem.author_user_id" type="warning" size="mini" :disabled="!selectedRows.length" @click="multiToComment">批量查看评论</el-button>
             </div>
         </el-card>
         <el-card class="box-card table-box">
@@ -187,7 +194,8 @@ export default {
                 author_user_id: null,
                 desc: null,
                 media_type: null,
-                got: null
+                got: null,
+                comment_sort:null
             },
             tableData: [],
             page: {
@@ -204,6 +212,10 @@ export default {
             got_typeLabel: [
                 { title: '已采集', value: 'y' },
                 { title: '未采集', value: 'n' },
+            ],
+            comment_sortLabel: [
+                { title: '升序', value: 'sort' },
+                { title: '降序', value: 'rsort' },
             ],
             selectedRows: [],
             showDialog: false,
@@ -310,6 +322,12 @@ export default {
                 this.$refs.comment.search(aweme_id);
             })
 
+        },
+        multiToComment(){
+            this.showCDialog = true;
+            this.$nextTick(() => {
+                this.$refs.comment.search(this.selectedRows.map(o=>o.split('@')[1]));
+            })
         },
         toPlay(video) {
             this.video = video;
