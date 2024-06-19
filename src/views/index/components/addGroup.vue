@@ -2,7 +2,7 @@
     <!-- 新增或编辑用户 -->
     <span class="groupAdd">
         <el-button type="info" @click="showDialog = true" :disabled="disabled" :size="size">归档</el-button>
-        <el-dialog title="用户归档" width='40%' center :visible.sync="showDialog" @closed="closeHandler">
+        <el-dialog title="用户归档" width='40%' center :visible.sync="showDialog" append-to-body :close-on-click-modal="false" :show-close="false">
             <div class="hd">
                 <el-image class='avatar' v-for="item in users" :src="item.avatar" fit="cover"
                     :key="item.uid"></el-image>
@@ -18,19 +18,18 @@
                 </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
-                <el-button @click="close">取 消</el-button>
-                <el-button type="primary" @click="onSubmit">确 定</el-button>
+                <el-button @click="close">取消</el-button>
+                <el-button type="primary" @click="onSubmit">确定</el-button>
             </div>
-            <el-dialog width="30%" center title="新增分组" :visible.sync="innerVisible" append-to-body
-                @closed="closeHandlerAdd">
+            <el-dialog width="30%" center title="新增分组" :visible.sync="innerVisible" append-to-body>
                 <el-form :model="addForm" :rules="addRules" ref='addForm' :label-width='labelWidth'>
                     <el-form-item label="分组名" prop="groupName">
                         <el-input v-model="addForm.groupName" placeholder="请输入名称"></el-input>
                     </el-form-item>
                 </el-form>
                 <div slot="footer" class="dialog-footer">
-                    <el-button @click="closeAdd">取 消</el-button>
-                    <el-button type="primary" @click="onSubmitAdd">确 定</el-button>
+                    <el-button @click="closeAdd">取消</el-button>
+                    <el-button type="primary" @click="onSubmitAdd">确定</el-button>
                 </div>
             </el-dialog>
         </el-dialog>
@@ -92,17 +91,25 @@ export default {
             return Array.isArray(this.user) ? this.user : [this.user];
         }
     },
-    created(){
-          this.editForm.groups = Array.isArray(this.user) ? [] : this.user.groups;
+    watch:{
+        // user(v){
+        //     console.log(v)
+        // },
+    },
+    created() {
+        this.initData();
     },
     methods: {
+        initData(){
+            this.editForm.groups = Array.isArray(this.user) ? [] : this.user.groups;
+        },
         onSubmit() {
             this.$refs.editForm.validate(valid => {
                 if (valid) {
                     userGroupEdit({ users: this.user, groups: this.editForm.groups }, r => {
                         this.$emit('submitCall');
                         this.$message.success('保存成功');
-                        this.close();
+                        this.showDialog = false;
                     })
                 } else {
                     this.$message.warning('请完善信息！');
@@ -125,21 +132,12 @@ export default {
             });
         },
         close() {
+            this.initData();
             this.showDialog = false;
         },
         closeAdd() {
             this.innerVisible = false;
-        },
-        //关闭弹窗时候触发，清空表单数据
-        closeHandler() {
-            this.editForm.groups = '';
-            //如果首次点开编辑，再执行该方法无法清空，数据会还原为第一次显示的内容
-            this.$refs.editForm.resetFields();//只能清空含有prop属性的表单
-        },
-        closeHandlerAdd() {
-            this.addForm.groupName = '';
-            this.$refs.addForm.resetFields();
-        },
+        }
     }
 }
 </script>
@@ -167,32 +165,36 @@ export default {
     }
 }
 
-.groupAdd {
-    .hd {
-        display: flex;
-        padding: 0 20px 20px;
+.hd {
+    display: flex;
+    padding: 0 20px 20px;
+
+    .avatar {
+        width: 60px !important;
+        height: 60px !important;
+        border-radius: 50%;
+        margin-right: 5px;
     }
-
-    .el-button {
-        margin-left: 10px;
-    }
-
-    .el-select {
-        width: 80%;
-    }
-
-    .editForm {
-        .el-form-item {
-            display: flex;
-
-            ::v-deep .el-form-item__content {
-                display: flex;
-                width: 100%;
-                margin-left: 0 !important;
-            }
-        }
-
-    }
-
 }
+
+.el-button {
+    margin-left: 10px;
+}
+
+.el-select {
+    width: 80%;
+}
+
+// .editForm {
+//     .el-form-item {
+//         display: flex;
+
+//         ::v-deep .el-form-item__content {
+//             display: flex;
+//             width: 100%;
+//             margin-left: 0 !important;
+//         }
+//     }
+
+// }
 </style>

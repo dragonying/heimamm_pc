@@ -33,7 +33,8 @@
                     <el-button @click='clear'>清除</el-button>
                     <el-button type="success" :disabled="!multipleSelection.length"
                         @click="multiUpdate">批量采集</el-button>
-                    <addGroup :disabled="!multipleSelection.length" :user="multipleSelection" size="large" @submitCall="getListData"></addGroup>
+                    <addGroup :disabled="!multipleSelection.length" :user="multipleSelection" size="large"
+                        @submitCall="getListData"></addGroup>
                 </el-form-item>
             </el-form>
         </el-card>
@@ -45,10 +46,13 @@
                 </el-table-column>
                 <el-table-column prop="avatar" label="头像" align="center" width="80">
                     <template slot-scope="scope">
-                        <div class="avatarBox">
-                            <el-image class='avatar' :src="scope.row.avatar" fit="cover"></el-image>
-                            <i class="el-icon-s-opportunity" v-if="scope.row.got"></i>
-                        </div>
+                        <el-popover placement="right" trigger="hover">
+                            <el-image style="width: 300px" :src="scope.row.avatar" fit="fit"></el-image>
+                            <div class="avatarBox" slot="reference">
+                                <el-image class='avatar' :src="scope.row.avatar" fit="cover"></el-image>
+                                <i class="el-icon-s-opportunity" v-if="scope.row.got"></i>
+                            </div>
+                        </el-popover>
                     </template>
                 </el-table-column>
                 <el-table-column prop="nickname" label="昵称" min-width="120">
@@ -101,7 +105,7 @@
                         <div class="opt">
                             <el-button size="mini" type="primary" @click="toDy(scope.row.sec_uid)">查看</el-button>
                             <el-button size="mini" type="success" @click="sendUpdate(scope.row)">采集</el-button>
-                            <addGroup :user="scope.row"  @submitCall="getListData"></addGroup>
+                            <addGroup :user="scope.row" @submitCall="getListData"></addGroup>
                         </div>
                     </template>
                 </el-table-column>
