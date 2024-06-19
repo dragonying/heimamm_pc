@@ -23,11 +23,17 @@
                             :key="itm.value"></el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="用户组" prop="group">
+                    <el-select class='middle-input' v-model="searchItem.group">
+                        <el-option v-for="itm in options" :label="itm" :value="itm" :key="itm.value"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">搜索</el-button>
                     <el-button @click='clear'>清除</el-button>
                     <el-button type="success" :disabled="!multipleSelection.length"
                         @click="multiUpdate">批量采集</el-button>
+                    <addGroup :disabled="!multipleSelection.length" :user="multipleSelection" size="large" @submitCall="getListData"></addGroup>
                 </el-form-item>
             </el-form>
         </el-card>
@@ -76,15 +82,27 @@
                         </el-tooltip>
                     </template>
                 </el-table-column>
-                <el-table-column sortable label="评论时间" align="center" min-width="120">
+                <el-table-column sortable label="评论时间" align="center" min-width="130">
                     <template slot-scope="scope">
                         <span>{{ scope.row.create_time | formatDateTime }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" align="center" width="150">
+                <el-table-column prop="groups" label="用户组" min-width="200">
                     <template slot-scope="scope">
-                        <el-button size="mini" type="info" @click="toDy(scope.row.sec_uid)">查看</el-button>
-                        <el-button size="mini" type="success" @click="sendUpdate(scope.row)">采集</el-button>
+                        <div class="group">
+                            <el-tag v-for="group in scope.row.groups" :key="group" size="mini"
+                                :color="optionsColor[group]">{{ group
+                                }}</el-tag>
+                        </div>
+                    </template>
+                </el-table-column>
+                <el-table-column label="操作" align="center" width="200">
+                    <template slot-scope="scope">
+                        <div class="opt">
+                            <el-button size="mini" type="primary" @click="toDy(scope.row.sec_uid)">查看</el-button>
+                            <el-button size="mini" type="success" @click="sendUpdate(scope.row)">采集</el-button>
+                            <addGroup :user="scope.row"  @submitCall="getListData"></addGroup>
+                        </div>
                     </template>
                 </el-table-column>
             </el-table>
@@ -96,7 +114,9 @@
     </div>
 </template>
 <script>
-import { getCommentList } from '@/api/aweme'
+import { getCommentList } from '@/api/aweme';
+import addGroup from '@/views/index/components/addGroup';
+import { mapState } from 'vuex'
 import bus from '@/utils/bus';
 import WebSocketClientManager from '@/utils/WebSocketClientManager';
 const ws = WebSocketClientManager.getInstance();
@@ -105,6 +125,7 @@ export default {
     name: 'comment-list',
     //组件
     components: {
+        addGroup
     },
     data() {
         return {
@@ -115,7 +136,8 @@ export default {
                 unique_id: null,
                 ip_label: null,
                 text: null,
-                got: null
+                got: null,
+                group: null
             },
             tableData: [],
             page: {
@@ -140,6 +162,18 @@ export default {
                 this.getListData();
             }
         }
+    },
+    computed: {
+        ...mapState({
+            options: state => state.groupOptions,
+            optionsColor: state => {
+                let mp = {};
+                state.groupOptions.forEach(o => {
+                    mp[o] = '#' + Math.floor(Math.random() * 16777215).toString(16);
+                })
+                return mp;
+            }
+        }),
     },
     methods: {
         multiUpdate() {
@@ -265,6 +299,22 @@ export default {
         padding-top: 30px;
         margin-bottom: -10px;
         text-align: center;
+    }
+
+    .opt {
+        display: flex;
+        justify-content: space-around;
+    }
+
+    .group {
+        padding-bottom: 5px;
+        height: 30px;
+
+        .el-tag {
+            font-size: 10px;
+            color: #fff;
+        }
+
     }
 }
 </style>

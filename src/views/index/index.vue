@@ -55,7 +55,6 @@ import { userInfo, userLogout } from '@/api/index'
 import WebSocketClientManager from '@/utils/WebSocketClientManager';
 import bus from '@/utils/bus';
 
-
 export default {
     name: 'index',
     data() {
@@ -113,6 +112,7 @@ export default {
         bus.$on('closeLog', value => {
             this.dialogVisible = false;
         })
+        this.$store.dispatch('getGroupOptions')
     },
     computed: {
         useravatar() {
@@ -191,10 +191,9 @@ export default {
 
     //侧边栏
     .aside {
-        width: 200px;
 
         .el-menu-vertical-demo:not(.el-menu--collapse) {
-            width: 200px;
+            width: 145px;
             min-height: 400px;
         }
     }

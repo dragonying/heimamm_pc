@@ -23,6 +23,12 @@
                             :key="itm.value"></el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="用户组" prop="group">
+                    <el-select class='middle-input' v-model="searchItem.group">
+                        <el-option v-for="itm in options" :label="itm" :value="itm"
+                            :key="itm.value"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">搜索</el-button>
                     <el-button @click='clear'>清除</el-button>
@@ -44,8 +50,8 @@
         <el-card class="box-card table-box" v-loading="loading">
             <div class="user-card">
                 <el-card class="userBox" v-for="(item, index) in tableData" :key="index">
-                    <el-checkbox class="check" size="mini" :checked="selectedRows.includes(item.sec_uid)" :key="item.sec_uid"
-                        @change="(e) => onChange(e, item.sec_uid)"></el-checkbox>
+                    <el-checkbox class="check" size="mini" :checked="selectedRows.includes(item.sec_uid)"
+                        :key="item.sec_uid" @change="(e) => onChange(e, item.sec_uid)"></el-checkbox>
                     <div class="uheader" :style="{ backgroundImage: 'url(' + item.cover || '#fff' + ')' }">
                         <div class="uhbox">
                             <el-image class='avatar' :src="item.avatar" fit="cover"
@@ -81,11 +87,16 @@
                             <p class="signature">签名：{{ item.signature }}</p>
                         </el-tooltip>
                     </div>
+                    <div class="group">
+                        <el-tag v-for="group in item.groups" :key="group" size="mini" :color="optionsColor[group]">{{ group
+                            }}</el-tag>
+                    </div>
                     <div class="opt">
                         <el-button size="mini" type="primary" @click="toAweme(item)">查看作品</el-button>
                         <el-button size="mini" type="success" @click="sendUpdate(item)">更新数据</el-button>
                         <el-button size="mini" type="warning" @click="sendShare(item)">批量分享</el-button>
                         <el-button size="mini" type="danger" @click="delUser(item.uid)">删除</el-button>
+                        <addGroup :user="item"  @submitCall="getUserList"></addGroup>
                     </div>
                 </el-card>
             </div>
@@ -100,14 +111,17 @@
 <script>
 import { getUserList, delUser } from '@/api/user'
 import diaLogComponent from '@/views/index/users/add'
+import addGroup from '@/views/index/components/addGroup'
 import WebSocketClientManager from '@/utils/WebSocketClientManager';
+import { mapState } from 'vuex'
 import bus from '@/utils/bus';
 const ws = WebSocketClientManager.getInstance();
 export default {
     name: 'user-list',
     //组件
     components: {
-        diaLogComponent
+        diaLogComponent,
+        addGroup
     },
     data() {
         return {
@@ -116,7 +130,8 @@ export default {
                 unique_id: null,
                 gender: null,
                 ip_location: null,
-                got: null
+                got: null,
+                group:null
             },
             tableData: [],
             loading: false,
@@ -266,6 +281,16 @@ export default {
 
     },
     computed: {
+        ...mapState({
+            options: state => state.groupOptions,
+            optionsColor: state => {
+                let mp = {};
+                state.groupOptions.forEach(o => {
+                    mp[o] = '#' + Math.floor(Math.random() * 16777215).toString(16);
+                })
+                return mp;
+            }
+        }),
     },
     mounted() {
         this.getUserList();
@@ -406,6 +431,22 @@ export default {
             }
         }
 
+        .opt {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+        }
+
+        .group {
+            padding-bottom: 5px;
+            height: 30px;
+
+            .el-tag {
+                font-size: 10px;
+                color: #fff;
+            }
+
+        }
 
     }
 

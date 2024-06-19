@@ -31,16 +31,16 @@
                     @click="addDialog">创建任务</el-button>
                 <el-button type="success" size="mini" :disabled="!selectedRows.length"
                     @click="multiUpdate">批量更新</el-button>
-                <el-button type="danger" size="mini" :disabled="!selectedRows.length"
-                    @click="multiDel">批量删除</el-button>
+                <el-button type="danger" size="mini" :disabled="!selectedRows.length" @click="multiDel">批量删除</el-button>
             </div>
         </el-card>
         <el-card class="box-card table-box">
             <div class="user-card" v-loading="loading">
                 <el-card class="userBox" v-for="(item, index) in tableData" :key="index">
                     <div v-if="item.media_type == 4">
-                        <el-checkbox class="check" size="mini" :checked="selectedRows.includes(item.aweme_id)" :key="item.aweme_id"
-                            @change="(e) => onChange(e, item.aweme_id)"></el-checkbox>
+                        <el-checkbox class="check" size="mini"
+                            :checked="selectedRows.includes(`${item.media_type}@${item.aweme_id}`)" :key="item.aweme_id"
+                            @change="(e) => onChange(e, item)"></el-checkbox>
                         <div class="videoBox">
                             <div class="videoInfo" v-if="item.video">
                                 <el-image class='cover' :src="item.video.cover" fit="cover"
@@ -60,7 +60,7 @@
                                 <div class="vd">
                                     <div class="opt">
                                         <h4>视频信息</h4>
-                                        <i class="el-icon-download">下载</i>
+                                        <i class="el-icon-download" @click="downloadVideo(item)">下载</i>
                                     </div>
                                     <p>像素：{{ item.video.ratio }}</p>
                                     <p>尺寸：{{ item.video.width }} x {{ item.video.height }}</p>
@@ -71,7 +71,7 @@
                                 <div class="vd">
                                     <div class="opt">
                                         <h4>音频信息</h4>
-                                        <i class="el-icon-download">下载</i>
+                                        <!-- <i class="el-icon-download">下载</i> -->
                                     </div>
                                     <p>名称：{{ item.music.title }}</p>
                                     <p>作者：{{ item.music.author }}</p>
@@ -94,8 +94,9 @@
                         </div>
                     </div>
                     <div v-else>
-                        <el-checkbox class="check" size="mini" :checked="selectedRows.includes(item.aweme_id)" :key="item.aweme_id"
-                            @change="(e) => onChange(e, item.aweme_id)"></el-checkbox>
+                        <el-checkbox class="check" size="mini"
+                            :checked="selectedRows.includes(`${item.media_type}@${item.aweme_id}`)" :key="item.aweme_id"
+                            @change="(e) => onChange(e, item)"></el-checkbox>
                         <div class="videoBox">
                             <div class="videoInfo" v-if="item.video">
                                 <el-image class='img' :src="item.video.cover" fit="cover"
@@ -121,7 +122,7 @@
                                 <div class="vd">
                                     <div class="opt">
                                         <h4>音频信息</h4>
-                                        <i class="el-icon-download">下载</i>
+                                        <!-- <i class="el-icon-download">下载</i> -->
                                     </div>
                                     <p>名称：{{ item.music.title }}</p>
                                     <p>作者：{{ item.music.author }}</p>
@@ -165,7 +166,7 @@
     </div>
 </template>
 <script>
-import { getAwemetList,delAweme } from '@/api/aweme'
+import { getAwemetList, delAweme, download } from '@/api/aweme'
 import diaLogComponent from '@/views/index/aweme/add'
 import commentComponent from '@/views/index/aweme/comment'
 import WebSocketClientManager from '@/utils/WebSocketClientManager';
@@ -222,6 +223,32 @@ export default {
         }
     },
     methods: {
+        downloadVideo(item) {
+            this.loading = true;
+            const { aweme_id, video: { play_url } } = item;
+            download({ sourceUrl: play_url, aweme_id, type: 'mp4' },res=>{
+                if (res?.url) {
+                    this.$message({
+                        type: 'success',
+                        message: '下载成功!'
+                    });
+                    this.video = {play_url:res.url,format:'mp4'};
+                    this.showDialog = true;
+                } else {
+                    this.$message({
+                        type: 'error',
+                        message: '下载失败，请更新数据再下载'
+                    });
+                }
+                this.loading = false;
+            }).catch(e => {
+                this.$message({
+                    type: 'error',
+                    message: e
+                });
+                this.loading = false;
+            })
+        },
         getComment(item) {
             bus.$emit('openLog');
             const { aweme_id, media_type, shareLink } = item;
@@ -230,8 +257,8 @@ export default {
             })
         },
         multiUpdate() {
-            const contents = this.selectedRows.map(aweme_id => {
-                const { media_type } = this.tableData.find(o => o.aweme_id == aweme_id) || {};
+            const contents = this.selectedRows.map(item => {
+                const [media_type, aweme_id] = item.split('@');
                 return media_type ? `${process.env.VUE_APP_DOUYIN_HOST}/${media_type == 4 ? 'video' : 'note'}/${aweme_id}` : false;
             }).filter(Boolean);
             if (contents.length) {
@@ -241,7 +268,7 @@ export default {
                 })
             }
         },
-        delAweme(aweme_id){
+        delAweme(aweme_id) {
             this.$confirm('确认要删除?', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -258,8 +285,8 @@ export default {
 
             })
         },
-        multiDel(){
-           this.delAweme(this.selectedRows);
+        multiDel() {
+            this.delAweme(this.selectedRows);
         },
         closeCHandler() {
             this.showCDialog = false;
@@ -293,9 +320,10 @@ export default {
             const { aweme_id, media_type } = item;
             window.open(`${process.env.VUE_APP_DOUYIN_HOST}/${media_type == 4 ? 'video' : 'note'}/${aweme_id}`, '_blank');
         },
-        onChange(e, aweme_id) {
-            const idx = this.selectedRows.indexOf(aweme_id);
-            idx > -1 ? this.selectedRows.splice(idx, 1) : this.selectedRows.push(aweme_id);
+        onChange(e, item) {
+            const key = `${item.media_type}@${item.aweme_id}`
+            const idx = this.selectedRows.indexOf(key);
+            idx > -1 ? this.selectedRows.splice(idx, 1) : this.selectedRows.push(key);
         },
         addDialog() {
             this.$refs.dialog.showDialog = true;
@@ -422,6 +450,7 @@ export default {
 
                 .el-icon-download {
                     font-weight: bold;
+                    cursor: pointer;
                 }
 
             }

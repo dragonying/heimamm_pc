@@ -30,9 +30,9 @@ export function delAweme(data={},callback = null) {
     }, callback)
 }
 //新增
-export function addSubject(data={},callback = null) {
+export function download(data={},callback = null) {
     return request({
-        url: '/subject/add',
+        url: '/download',
         method: 'post',
         data:data
     }, callback)
