@@ -44,7 +44,7 @@
         </div>
         <div class="right">
           <div class="tags" v-for="(group, index) in dataStatic.groups" :key="index">
-            <el-tag  :color="color()">{{ group.name }}</el-tag>
+            <el-tag :color="color()">{{ group.name }}</el-tag>
             <div class="st">
               <p>总数：{{ group.length }}条</p>
               <p>大小：{{ group.size | formatFileSize }}</p>
@@ -54,210 +54,20 @@
         </div>
       </div>
     </el-card>
-    <!--年度月数据统计-->
-    <el-card class="box-card chart-box">
-      <yearMonth :yearMonthData="yearMonthData"></yearMonth>
-    </el-card>
-
-    <!--饼状图统计-->
-    <el-card class="box-card chart-box">
-      <div class="chart" ref="redchart"></div>
-      <div class="chart" ref="rolechart"></div>
-    </el-card>
-    <!--日统计数据-->
-    <el-card class="box-card chart-box">
-      <dateTable :tableData="dateData"></dateTable>
-    </el-card>
-    <!--用户地区分布图-->
-    <el-card class="box-card chart-box">
-      <chartMap :chartData="mapData"></chartMap>
-    </el-card>
   </div>
 </template>
 <script>
-import echarts from 'echarts'
 import { mapState } from 'vuex'
 
-import {
-  getTitleData,
-  getredStatistics,
-  getRoleStatistics,
-  getProvince,
-  getUserDateData,
-  getUserYearMonthData
-} from '@/api/chartView'
-import chartMap from '@/components/charts/map'
-import dateTable from '@/components/charts/table'
-import yearMonth from '@/components/charts/yearMonth'
 
 export default {
   name: 'chart',
   components: {
-    chartMap,
-    dateTable,
-    yearMonth
   },
   data() {
-    return {
-      titleData: {
-        total_done_reds: 0, //刷题总数
-        personal_reds: 0, //人均刷题总数
-        total_users: 0, //用户总数
-        increment_users: 0, //今日增长用户数量
-        increment_reds: 0, //今日增加题数
-        total_reds: 0 //题总数
-      },
-      mapData: {}, //地图分布数据
-      dateData: [], //日统计数据
-      yearMonthData: [] //年度月数据统计
-    }
+    return {}
   },
   methods: {
-    createPieCharts(target, res) {
-      let title = res.title
-      let seriesName = res.seriesName
-      let dataData = res.data
-      let legendData = dataData.map(r => r.name)
-      echarts.init(target).setOption({
-        title: {
-          text: title,
-          left: 'center',
-          textStyle: {
-            fontSize: 24,
-            fontWeight: 'normal',
-            color: '#666666'
-          }
-        },
-        tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b}: {c} ({d}%)'
-        },
-        //生成指定数量的颜色选项
-        color: (function () {
-          let numArr = [
-            0,
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            'a',
-            'b',
-            'c',
-            'd',
-            'e',
-            'f'
-          ]
-          let colorArr = []
-          legendData.forEach(() => {
-            let s = '#'
-            for (let i = 0; i < 6; i++) {
-              s += new String(numArr[Math.floor(Math.random() * numArr.length)])
-            }
-            colorArr.push(s)
-          })
-          return colorArr
-        })(),
-        legend: {
-          orient: 'vertical',
-          right: 10,
-          data: legendData
-        },
-        series: [
-          {
-            name: seriesName,
-            type: 'pie',
-            radius: ['50%', '70%'],
-            avoidLabelOverlap: false,
-            label: {
-              show: false,
-              position: 'center'
-            },
-            emphasis: {
-              label: {
-                show: true,
-                fontSize: '30',
-                fontWeight: 'bold'
-              }
-            },
-            labelLine: {
-              show: false
-            },
-            data: dataData
-          }
-        ]
-      })
-    },
-    createPieNewCharts(target, res) {
-      let title = res.title
-      let seriesName = res.seriesName
-      let dataData = res.data
-      let legendData = dataData.map(r => r.name)
-      echarts.init(target).setOption({
-        title: {
-          text: title,
-          left: 'left',
-          textStyle: {
-            fontSize: 24,
-            fontWeight: 'normal',
-            color: '#666666'
-          }
-        },
-        tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b}: {c} ({d}%)'
-        },
-        //生成指定数量的颜色选项
-        color: (function () {
-          let numArr = [
-            0,
-            1,
-            2,
-            3,
-            4,
-            5,
-            6,
-            7,
-            8,
-            9,
-            'a',
-            'b',
-            'c',
-            'd',
-            'e',
-            'f'
-          ]
-          let colorArr = []
-          legendData.forEach(() => {
-            let s = '#'
-            for (let i = 0; i < 6; i++) {
-              s += new String(numArr[Math.floor(Math.random() * numArr.length)])
-            }
-            colorArr.push(s)
-          })
-          return colorArr
-        })(),
-        legend: {
-          left: 'center',
-          bottom: '20px',
-          data: legendData
-        },
-        series: [
-          {
-            name: seriesName,
-            type: 'pie',
-            radius: [0, '30%'],
-            center: ['50%', '50%'],
-            roseType: 'area',
-            data: dataData
-          }
-        ]
-      })
-    }
   },
   computed: {
     ...mapState({
@@ -269,30 +79,15 @@ export default {
   },
   mounted() {
     this.$store.dispatch('dataStatic');
-    getTitleData(res => {
-      this.titleData = res
-    })
-    getredStatistics(res => {
-      this.createPieNewCharts(this.$refs.redchart, res)
-    })
-    getRoleStatistics(res => {
-      this.createPieCharts(this.$refs.rolechart, res)
-    })
-    getProvince(res => {
-      this.mapData = res
-    })
-    getUserDateData(res => {
-      this.dateData = res
-    })
-    getUserYearMonthData(res => {
-      this.yearMonthData = res
-    })
   }
 }
 </script>
 
 <style lang="less">
 .chart-container {
+  .dt{
+    cursor: pointer;
+  }
   .group-data {
     display: flex;
     align-items: center;

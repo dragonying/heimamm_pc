@@ -40,7 +40,8 @@
                 <el-button type="success" size="mini" :disabled="!selectedRows.length"
                     @click="multiUpdate">批量更新</el-button>
                 <el-button type="danger" size="mini" :disabled="!selectedRows.length" @click="multiDel">批量删除</el-button>
-                <el-button v-if="searchItem.author_user_id" type="warning" size="mini" :disabled="!selectedRows.length" @click="multiToComment">批量查看评论</el-button>
+                <el-button v-if="searchItem.author_user_id" type="warning" size="mini" :disabled="!selectedRows.length"
+                    @click="multiToComment">批量查看评论</el-button>
             </div>
         </el-card>
         <el-card class="box-card table-box">
@@ -160,9 +161,11 @@
         </el-card>
         <diaLogComponent ref='dialog'></diaLogComponent>
         <el-dialog title="视频播放" width="600" center :visible.sync="showDialog" @closed="closeHandler">
-            <video controls v-if="video">
-                <source :src="video.play_url" :type="`video/${video.format}`">
-            </video>
+            <div class="media">
+                <video controls v-if="video">
+                    <source :src="video.play_url" :type="`video/${video.format}`">
+                </video>
+            </div>
         </el-dialog>
         <el-dialog title="音频播放" width="600" center :visible.sync="showMDialog" @closed="closeMHandler">
             <audio :src="music" v-if="music" controls></audio>
@@ -195,7 +198,7 @@ export default {
                 desc: null,
                 media_type: null,
                 got: null,
-                comment_sort:null
+                comment_sort: null
             },
             tableData: [],
             page: {
@@ -238,13 +241,13 @@ export default {
         downloadVideo(item) {
             this.loading = true;
             const { aweme_id, video: { play_url } } = item;
-            download({ sourceUrl: play_url, aweme_id, type: 'mp4' },res=>{
+            download({ sourceUrl: play_url, aweme_id, type: 'mp4' }, res => {
                 if (res?.url) {
                     this.$message({
                         type: 'success',
                         message: '下载成功!'
                     });
-                    this.video = {play_url:res.url,format:'mp4'};
+                    this.video = { play_url: res.url, format: 'mp4' };
                     this.showDialog = true;
                 } else {
                     this.$message({
@@ -270,7 +273,7 @@ export default {
         },
         multiUpdate() {
             const contents = this.selectedRows.map(item => {
-                const {media_type, aweme_id} = item;
+                const { media_type, aweme_id } = item;
                 return media_type ? `${process.env.VUE_APP_DOUYIN_HOST}/${media_type == 4 ? 'video' : 'note'}/${aweme_id}` : false;
             }).filter(Boolean);
             if (contents.length) {
@@ -322,10 +325,10 @@ export default {
             })
 
         },
-        multiToComment(){
+        multiToComment() {
             this.showCDialog = true;
             this.$nextTick(() => {
-                this.$refs.comment.search(this.selectedRows.map(o=>o.aweme_id));
+                this.$refs.comment.search(this.selectedRows.map(o => o.aweme_id));
             })
         },
         toPlay(video) {
@@ -576,9 +579,18 @@ export default {
         color: red;
     }
 
-    video,
     audio {
         width: 100%;
     }
+
+    .media {
+        text-align: center;
+        background-color: black;
+
+        video {
+            width: 50%;
+        }
+    }
+
 }
 </style>

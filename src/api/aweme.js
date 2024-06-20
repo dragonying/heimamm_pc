@@ -38,19 +38,19 @@ export function download(data={},callback = null) {
     }, callback)
 }
 //编辑
-export function editorSubject(data={},callback = null) {
+export function getDownloadList(data={},callback = null) {
     return request({
-        url: '/subject/edit',
+        url: '/downloadList',
         method: 'post',
         data:data
     }, callback)
 }
 
 //详情
-export function getInfo(data={},callback = null) {
+export function downloadDel(data={},callback = null) {
     return request({
-        url: '/subject/info',
-        method: 'get',
-        params:data
+        url: '/downloadDel',
+        method: 'post',
+        data:data
     }, callback)
 }

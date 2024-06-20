@@ -66,6 +66,12 @@ const router = new VueRouter({
                         title: '作品列表',
                     }
                 },
+                {
+                    path: 'download', component: resolve => require(['@/views/index/download'], resolve),
+                    meta: {
+                        title: '下载管理',
+                    }
+                },
             ]
         },
     ]
