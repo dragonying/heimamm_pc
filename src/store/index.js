@@ -2,7 +2,7 @@
 import Vue from 'vue'
 // 导入 Vuex
 import Vuex from 'vuex'
-import { getGroupOptions } from '@/api/user'
+import { getGroupOptions, dataStatic } from '@/api/user'
 
 // use一下
 Vue.use(Vuex)
@@ -14,15 +14,22 @@ const store = new Vuex.Store({
     userInfo: { username: '龙英' },//存储用户信息
     power: [],//权限
     groupOptions: [],
+    dataStatic: {},
   },
   mutations: {
     getGroupOptions(state, data) {
       state.groupOptions = data;
+    },
+    dataStatic(state, data) {
+      state.dataStatic = data;
     }
   },
   actions: {
     getGroupOptions({ commit }) {
       getGroupOptions(data => commit('getGroupOptions', data))
+    },
+    dataStatic({ commit }) {
+      dataStatic(data => commit('dataStatic', data))
     }
   }
 })

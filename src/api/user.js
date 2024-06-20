@@ -45,4 +45,10 @@ export function userGroupEdit(data = {}, callback = null) {
         data: data
     }, callback)
 }
+export function dataStatic(callback = null) {
+    return request({
+        url: '/dataStatic',
+        method: 'post',
+    }, callback)
+}
 

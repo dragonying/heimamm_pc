@@ -1,32 +1,58 @@
 <template>
   <div class="chart-container">
-    <el-card class="box-card">
+    <el-card class="box-card" header="资源概况">
       <ul class="chart-data">
-        <li>
-          <div class="dt user">{{ titleData.increment_users }}</div>
-          <p class="title">今日新增用户</p>
+        <li class="blue">
+          <div class="dt">{{ dataStatic.spiderDataSize | formatFileSize }}</div>
+          <p class="title">采集数据</p>
         </li>
-        <li>
-          <div class="dt user">{{ titleData.total_users }}</div>
-          <p class="title">总用户量</p>
+        <li class="red">
+          <div class="dt">
+            <span>{{ dataStatic.userDataLength }}条</span>
+            <span>{{ dataStatic.userDataSize | formatFileSize }}</span>
+          </div>
+          <p class="title">用户数据</p>
         </li>
-        <li>
-          <div class="dt question">{{ titleData.increment_questions }}</div>
-          <p class="title">新增试题</p>
+        <li class="red">
+          <div class="dt">
+            <span>{{ dataStatic.awemeDataLength }}条</span>
+            <span>{{ dataStatic.awemeDataSize | formatFileSize }}</span>
+          </div>
+          <p class="title">作品数据</p>
         </li>
-        <li>
-          <div class="dt question">{{ titleData.total_questions }}</div>
-          <p class="title">总试题量</p>
+        <li class="red">
+          <div class="dt">
+            <span>{{ dataStatic.commentDataLength }}条</span>
+            <span>{{ dataStatic.commentDataSize | formatFileSize }}</span>
+          </div>
+          <p class="title">评论数据</p>
         </li>
-        <li>
-          <div class="dt check">{{ titleData.total_done_questions }}</div>
-          <p class="title">总刷题量</p>
-        </li>
-        <li>
-          <div class="dt check">{{ titleData.personal_questions }}</div>
-          <p class="title">人均刷题量</p>
+        <li class="green">
+          <div class="dt">
+            <span>{{ dataStatic.downDataLength }}条</span>
+            <span>{{ dataStatic.downLoadDataSize | formatFileSize }}</span>
+          </div>
+          <p class="title">下载数据</p>
         </li>
       </ul>
+    </el-card>
+    <el-card class="box-card" header="分组信息">
+      <div class="group-data">
+        <div class="left">
+          <div class="dt">{{ dataStatic.groupDataSize | formatFileSize }}</div>
+          <p class="title">分组数据</p>
+        </div>
+        <div class="right">
+          <div class="tags" v-for="(group, index) in dataStatic.groups" :key="index">
+            <el-tag  :color="color()">{{ group.name }}</el-tag>
+            <div class="st">
+              <p>总数：{{ group.length }}条</p>
+              <p>大小：{{ group.size | formatFileSize }}</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </el-card>
     <!--年度月数据统计-->
     <el-card class="box-card chart-box">
@@ -35,7 +61,7 @@
 
     <!--饼状图统计-->
     <el-card class="box-card chart-box">
-      <div class="chart" ref="questionchart"></div>
+      <div class="chart" ref="redchart"></div>
       <div class="chart" ref="rolechart"></div>
     </el-card>
     <!--日统计数据-->
@@ -50,10 +76,11 @@
 </template>
 <script>
 import echarts from 'echarts'
+import { mapState } from 'vuex'
 
 import {
   getTitleData,
-  getQuestionStatistics,
+  getredStatistics,
   getRoleStatistics,
   getProvince,
   getUserDateData,
@@ -70,15 +97,15 @@ export default {
     dateTable,
     yearMonth
   },
-  data () {
+  data() {
     return {
       titleData: {
-        total_done_questions: 0, //刷题总数
-        personal_questions: 0, //人均刷题总数
+        total_done_reds: 0, //刷题总数
+        personal_reds: 0, //人均刷题总数
         total_users: 0, //用户总数
         increment_users: 0, //今日增长用户数量
-        increment_questions: 0, //今日增加题数
-        total_questions: 0 //题总数
+        increment_reds: 0, //今日增加题数
+        total_reds: 0 //题总数
       },
       mapData: {}, //地图分布数据
       dateData: [], //日统计数据
@@ -86,7 +113,7 @@ export default {
     }
   },
   methods: {
-    createPieCharts (target, res) {
+    createPieCharts(target, res) {
       let title = res.title
       let seriesName = res.seriesName
       let dataData = res.data
@@ -165,7 +192,7 @@ export default {
         ]
       })
     },
-    createPieNewCharts (target, res) {
+    createPieNewCharts(target, res) {
       let title = res.title
       let seriesName = res.seriesName
       let dataData = res.data
@@ -232,12 +259,21 @@ export default {
       })
     }
   },
-  mounted () {
+  computed: {
+    ...mapState({
+      dataStatic: state => state.dataStatic
+    }),
+    color() {
+      return () => '#' + Math.floor(Math.random() * 16777215).toString(16)
+    }
+  },
+  mounted() {
+    this.$store.dispatch('dataStatic');
     getTitleData(res => {
       this.titleData = res
     })
-    getQuestionStatistics(res => {
-      this.createPieNewCharts(this.$refs.questionchart, res)
+    getredStatistics(res => {
+      this.createPieNewCharts(this.$refs.redchart, res)
     })
     getRoleStatistics(res => {
       this.createPieCharts(this.$refs.rolechart, res)
@@ -257,53 +293,149 @@ export default {
 
 <style lang="less">
 .chart-container {
+  .group-data {
+    display: flex;
+    align-items: center;
+
+    .right {
+      flex: 1;
+      display: flex;
+      flex-wrap: wrap;
+      margin-left: 10px;
+
+      .tags {
+        margin: 5px;
+        padding: 5px;
+        border: 2px solid #4933ef;
+        border-radius: 5px;
+
+        .el-tag {
+          color: #fff;
+        }
+
+        .st {
+          font-size: 14px;
+
+          &>* {
+            margin-right: 5px;
+          }
+        }
+      }
+    }
+
+    .left {
+      .dt {
+        width: 100px;
+        height: 100px;
+        font-size: 16px;
+        border-radius: 50%;
+        border: 2px solid #4933ef;
+        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: #4933ef;
+      }
+
+      .title {
+        font-size: 16px;
+        font-weight: 400;
+        text-align: center;
+        letter-spacing: 0px;
+        color: #4933ef;
+      }
+
+      &>* {
+        margin-bottom: 2px;
+      }
+    }
+  }
+
   .chart-data {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    .dt {
-      width: 99px;
-      height: 99px;
-      font-size: 35px;
-      line-height: 99px;
-      border-radius: 50%;
-      border: 2px solid #f76137;
-      text-align: center;
-      margin-bottom: 10px;
-      &.user {
-        border-color: #0086fa;
+
+    li {
+      &.blue {
+
         color: #0086fa;
+
+        .dt {
+          border-color: #0086fa;
+        }
       }
-      &.question {
-        border-color: #f76137;
+
+      &.red {
+        .dt {
+          border-color: #f76137;
+        }
+
         color: #f76137;
       }
-      &.check {
-        border-color: #55cd78;
+
+      &.green {
+        .dt {
+          border-color: #55cd78;
+        }
+
         color: #55cd78;
       }
+
+      &.pure {
+        .dt {
+          border-color: #4933ef;
+        }
+
+        color: #4933ef;
+      }
+
+      .dt {
+        width: 120px;
+        height: 120px;
+        font-size: 16px;
+        border-radius: 50%;
+        border: 2px solid #f76137;
+        margin-bottom: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        &>* {
+          margin-bottom: 2px;
+        }
+      }
     }
+
+
     .title {
       font-size: 16px;
-      font-family: Microsoft YaHei Regular, Microsoft YaHei Regular-Regular;
       font-weight: 400;
       text-align: center;
-      color: #737373;
       letter-spacing: 0px;
     }
   }
+
   .chart-box {
     margin-top: 13px;
+
     .el-card__body {
       display: flex;
       justify-content: space-around;
       align-items: center;
       width: 100%;
+
       .chart {
         height: 570px;
         flex: 1;
       }
     }
+  }
+
+  .box-card {
+    margin-bottom: 10px;
   }
 }
 </style>

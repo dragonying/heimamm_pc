@@ -25,8 +25,7 @@
                 </el-form-item>
                 <el-form-item label="用户组" prop="group">
                     <el-select class='middle-input' v-model="searchItem.group">
-                        <el-option v-for="itm in options" :label="itm" :value="itm"
-                            :key="itm.value"></el-option>
+                        <el-option v-for="itm in options" :label="itm" :value="itm" :key="itm.value"></el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item>
@@ -38,6 +37,8 @@
         </el-card>
         <el-card class="box-card table-box">
             <div class="checkOpt">
+                <el-checkbox class="check" size="mini" @change="allChange" v-model="isAllChecked"
+                    key="all">全选</el-checkbox>
                 <div>已选择 {{ selectedRows.length }} 项</div>
                 <el-button type="primary" size="mini" :disabled="!selectedRows.length" icon="el-icon-upload"
                     @click="addDialog">创建任务</el-button>
@@ -50,8 +51,8 @@
         <el-card class="box-card table-box" v-loading="loading">
             <div class="user-card">
                 <el-card class="userBox" v-for="(item, index) in tableData" :key="index">
-                    <el-checkbox class="check" size="mini" :checked="selectedRows.includes(item.sec_uid)"
-                        :key="item.sec_uid" @change="(e) => onChange(e, item.sec_uid)"></el-checkbox>
+                    <el-checkbox class="check" size="mini" v-model="item.isChecked" :key="item.sec_uid"
+                        @change="(e) => onChange(e, index)"></el-checkbox>
                     <div class="uheader" :style="{ backgroundImage: 'url(' + item.cover || '#fff' + ')' }">
                         <div class="uhbox">
                             <el-image class='avatar' :src="item.avatar" fit="cover"
@@ -88,15 +89,16 @@
                         </el-tooltip>
                     </div>
                     <div class="group">
-                        <el-tag v-for="group in item.groups" :key="group" size="mini" :color="optionsColor[group]">{{ group
-                            }}</el-tag>
+                        <el-tag v-for="group in item.groups" :key="group" size="mini" :color="optionsColor[group]">{{
+                group
+            }}</el-tag>
                     </div>
                     <div class="opt">
                         <el-button size="mini" type="primary" @click="toAweme(item)">查看作品</el-button>
                         <el-button size="mini" type="success" @click="sendUpdate(item)">更新数据</el-button>
                         <el-button size="mini" type="warning" @click="sendShare(item)">批量分享</el-button>
                         <el-button size="mini" type="danger" @click="delUser(item.uid)">删除</el-button>
-                        <addGroup :user="item"  @submitCall="getUserList"></addGroup>
+                        <addGroup :user="item" @submitCall="getUserList"></addGroup>
                     </div>
                 </el-card>
             </div>
@@ -131,7 +133,7 @@ export default {
                 gender: null,
                 ip_location: null,
                 got: null,
-                group:null
+                group: null
             },
             tableData: [],
             loading: false,
@@ -150,7 +152,7 @@ export default {
                 { title: '已采集', value: 'y' },
                 { title: '未采集', value: 'n' },
             ],
-            selectedRows: []
+            isAllChecked: false
         }
     },
     watch: {
@@ -182,9 +184,7 @@ export default {
                 type: 'warning'
             }).then(() => {
                 delUser({
-                    uids: this.selectedRows.map(sec_uid => {
-                        return this.tableData.find(o => o.sec_uid == sec_uid)?.uid;
-                    })
+                    uids: this.selectedRows.map(o => o.uid)
                 }).then(_ => {
                     this.handleCurrentChange(1);
                     this.selectedRows = [];
@@ -197,13 +197,10 @@ export default {
             })
         },
         multiUpdate() {
-            const contents = this.selectedRows.map(sec_uid => {
-                return this.tableData.find(o => o.sec_uid == sec_uid);
-            });
-            if (contents) {
+            if (this.selectedRows.length) {
                 bus.$emit('openLog');
                 this.$nextTick(() => {
-                    ws.sendMessage({ cmd: 'getUserInfo', content: contents });
+                    ws.sendMessage({ cmd: 'getUserInfo', content: this.selectedRows });
                 })
             }
         },
@@ -216,9 +213,9 @@ export default {
         toDy(sec_uid) {
             window.open(`${process.env.VUE_APP_DOUYIN_HOST}/user/${sec_uid}`, '_blank');
         },
-        onChange(e, sec_uid) {
-            const idx = this.selectedRows.indexOf(sec_uid);
-            idx > -1 ? this.selectedRows.splice(idx, 1) : this.selectedRows.push(sec_uid);
+        onChange(e, index) {
+            this.$set(this.tableData, index, { ...this.tableData[index], isChecked: e })
+            this.isAllChecked = this.tableData.every(o => o.isChecked)
         },
         addDialog() {
             this.$refs.dialog.showDialog = true;
@@ -268,12 +265,17 @@ export default {
                 this.tableData = res.items;
                 this.page.total = res.total
                 this.loading = false;
+                this.isAllChecked = false;
             })
         },
         preview(row) {
             return row.pic ? row.pic.map(v => {
                 return process.env.VUE_APP_BASEURL + v;
             }) : [];
+        },
+        allChange(e) {
+            this.tableData = this.tableData.map(o => ({ ...o, isChecked: e }))
+            this.isAllChecked = e;
         }
 
     },
@@ -291,13 +293,15 @@ export default {
                 return mp;
             }
         }),
+        selectedRows() {
+            return this.tableData.filter(o => o.isChecked);
+        }
     },
     mounted() {
         this.getUserList();
     },
     created() {
         bus.$on('getUserInfo', value => {
-            this.selectedRows = [];
             this.getUserList();
         })
     }

@@ -32,6 +32,8 @@
         </el-card>
         <el-card class="box-card table-box">
             <div class="checkOpt">
+                <el-checkbox class="check" size="mini" @change="allChange" v-model="isAllChecked"
+                    key="all">全选</el-checkbox>
                 <div>已选择 {{ selectedRows.length }} 项</div>
                 <el-button type="primary" size="mini" :disabled="!selectedRows.length" icon="el-icon-upload"
                     @click="addDialog">创建任务</el-button>
@@ -45,9 +47,8 @@
             <div class="user-card" v-loading="loading">
                 <el-card class="userBox" v-for="(item, index) in tableData" :key="index">
                     <div v-if="item.media_type == 4">
-                        <el-checkbox class="check" size="mini"
-                            :checked="selectedRows.includes(`${item.media_type}@${item.aweme_id}`)" :key="item.aweme_id"
-                            @change="(e) => onChange(e, item)"></el-checkbox>
+                        <el-checkbox class="check" size="mini" v-model="item.isChecked" :key="item.aweme_id"
+                            @change="(e) => onChange(e, index)"></el-checkbox>
                         <div class="videoBox">
                             <div class="videoInfo" v-if="item.video">
                                 <el-image class='cover' :src="item.video.cover" fit="cover"
@@ -101,9 +102,8 @@
                         </div>
                     </div>
                     <div v-else>
-                        <el-checkbox class="check" size="mini"
-                            :checked="selectedRows.includes(`${item.media_type}@${item.aweme_id}`)" :key="item.aweme_id"
-                            @change="(e) => onChange(e, item)"></el-checkbox>
+                        <el-checkbox class="check" size="mini" v-model="item.isChecked" :key="item.aweme_id"
+                            @change="(e) => onChange(e, index)"></el-checkbox>
                         <div class="videoBox">
                             <div class="videoInfo" v-if="item.video">
                                 <el-image class='img' :src="item.video.cover" fit="cover"
@@ -217,12 +217,12 @@ export default {
                 { title: '升序', value: 'sort' },
                 { title: '降序', value: 'rsort' },
             ],
-            selectedRows: [],
             showDialog: false,
             showMDialog: false,
             showCDialog: false,
             video: null,
-            music: null
+            music: null,
+            isAllChecked: false
         }
     },
     watch: {
@@ -270,7 +270,7 @@ export default {
         },
         multiUpdate() {
             const contents = this.selectedRows.map(item => {
-                const [media_type, aweme_id] = item.split('@');
+                const {media_type, aweme_id} = item;
                 return media_type ? `${process.env.VUE_APP_DOUYIN_HOST}/${media_type == 4 ? 'video' : 'note'}/${aweme_id}` : false;
             }).filter(Boolean);
             if (contents.length) {
@@ -288,7 +288,6 @@ export default {
             }).then(() => {
                 delAweme({ aweme_ids: Array.isArray(aweme_id) ? aweme_id : [aweme_id] }).then(_ => {
                     this.handleCurrentChange(1);
-                    Array.isArray(aweme_id) && (this.selectedRows = []);
                     this.$message({
                         type: 'success',
                         message: '删除成功!'
@@ -326,7 +325,7 @@ export default {
         multiToComment(){
             this.showCDialog = true;
             this.$nextTick(() => {
-                this.$refs.comment.search(this.selectedRows.map(o=>o.split('@')[1]));
+                this.$refs.comment.search(this.selectedRows.map(o=>o.aweme_id));
             })
         },
         toPlay(video) {
@@ -338,10 +337,9 @@ export default {
             const { aweme_id, media_type } = item;
             window.open(`${process.env.VUE_APP_DOUYIN_HOST}/${media_type == 4 ? 'video' : 'note'}/${aweme_id}`, '_blank');
         },
-        onChange(e, item) {
-            const key = `${item.media_type}@${item.aweme_id}`
-            const idx = this.selectedRows.indexOf(key);
-            idx > -1 ? this.selectedRows.splice(idx, 1) : this.selectedRows.push(key);
+        onChange(e, index) {
+            this.$set(this.tableData, index, { ...this.tableData[index], isChecked: e })
+            this.isAllChecked = this.tableData.every(o => o.isChecked)
         },
         addDialog() {
             this.$refs.dialog.showDialog = true;
@@ -378,7 +376,12 @@ export default {
                 this.tableData = res.items;
                 this.page.total = res.total
                 this.loading = false;
+                this.isAllChecked = false;
             })
+        },
+        allChange(e) {
+            this.tableData = this.tableData.map(o => ({ ...o, isChecked: e }))
+            this.isAllChecked = e;
         }
 
     },
@@ -388,13 +391,15 @@ export default {
         }
     },
     computed: {
+        selectedRows() {
+            return this.tableData.filter(o => o.isChecked);
+        }
     },
     mounted() {
         if (this.$route.query.author_user_id) {
             this.searchItem.author_user_id = this.$route.query.author_user_id;
         }
         bus.$on('getComment', value => {
-            this.selectedRows = [];
             this.getAwemetList();
         })
         this.getAwemetList();

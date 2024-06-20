@@ -111,8 +111,10 @@ export default {
         });
         bus.$on('closeLog', value => {
             this.dialogVisible = false;
+            this.$store.dispatch('dataStatic');
         })
-        this.$store.dispatch('getGroupOptions')
+        this.$store.dispatch('getGroupOptions');
+        this.$store.dispatch('dataStatic');
     },
     computed: {
         useravatar() {
