@@ -28,6 +28,12 @@ module.exports = {
           changeOrigin: true, //是否跨域
           pathRewrite: {}
         },
+        '/groupUser': {
+          target: 'http://localhost:3056/',
+          secure: false, //如果是https接口，需要配置这个参数
+          changeOrigin: true, //是否跨域
+          pathRewrite: {}
+        },
         '/download': {
           target: 'http://localhost:3056/',
           secure: false, //如果是https接口，需要配置这个参数

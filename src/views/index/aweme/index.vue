@@ -38,7 +38,7 @@
                 <el-button type="primary" size="mini" :disabled="!selectedRows.length" icon="el-icon-upload"
                     @click="addDialog">创建任务</el-button>
                 <el-button type="success" size="mini" :disabled="!selectedRows.length"
-                    @click="multiUpdate">批量更新</el-button>
+                    @click="multiUpdate">批量采集评论</el-button>
                 <el-button type="danger" size="mini" :disabled="!selectedRows.length" @click="multiDel">批量删除</el-button>
                 <el-button v-if="searchItem.author_user_id" type="warning" size="mini" :disabled="!selectedRows.length"
                     @click="multiToComment">批量查看评论</el-button>
@@ -97,7 +97,7 @@
                         <div class="opt">
                             <el-button size="mini" type="info" @click="toDy(item)">抖音查看</el-button>
                             <el-button size="mini" type="primary" @click="toComment(item.aweme_id)">查看评论</el-button>
-                            <el-button size="mini" type="success" @click="getComment(item)">更新数据</el-button>
+                            <el-button size="mini" type="success" @click="getComment(item)">采集评论</el-button>
                             <el-button size="mini" type="warning">批量分享</el-button>
                             <el-button size="mini" type="danger" @click="delAweme(item.aweme_id)">删除</el-button>
                         </div>
@@ -147,7 +147,7 @@
                         <div class="opt">
                             <el-button size="mini" type="info" @click="toDy(item)">抖音查看</el-button>
                             <el-button size="mini" type="primary" @click="toComment(item.aweme_id)">查看评论</el-button>
-                            <el-button size="mini" type="success" @click="getComment(item)">更新数据</el-button>
+                            <el-button size="mini" type="success" @click="getComment(item)">采集评论</el-button>
                             <el-button size="mini" type="warning">批量分享</el-button>
                         </div>
                     </div>
@@ -205,7 +205,7 @@ export default {
                 currentPage: 1,//当前页
                 total: 0,//数据总条数
                 pageSize: 6,//每页条数
-                pageSizes: [6, 9, 12, 15, 18, 21, 24, 27, 30],//每页条数选择
+                pageSizes: [6, 9, 12, 15, 18, 21, 24, 27, 30,60,120,180,210],//每页条数选择
                 layout: "total, sizes, prev, pager, next, jumper"//组件布局
             },
             media_typeLabel: [

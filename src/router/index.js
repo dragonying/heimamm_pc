@@ -51,7 +51,6 @@ const router = new VueRouter({
                     //添加路由原信息，字段名自定义
                     meta: {
                         title: '数据概览',
-                        zfy: 'fuck'
                     }
                 },
                 {
@@ -64,6 +63,12 @@ const router = new VueRouter({
                     path: 'aweme', component: resolve => require(['@/views/index/aweme'], resolve),
                     meta: {
                         title: '作品列表',
+                    }
+                },
+                {
+                    path: 'group', component: resolve => require(['@/views/index/group'], resolve),
+                    meta: {
+                        title: '分组管理',
                     }
                 },
                 {

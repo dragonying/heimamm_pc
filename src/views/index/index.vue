@@ -30,6 +30,10 @@
                         <i class="el-icon-video-camera"></i>
                         <span slot="title">作品列表</span>
                     </el-menu-item>
+                    <el-menu-item index="/index/group">
+                        <i class="el-icon-folder-opened"></i>
+                        <span slot="title">分组管理</span>
+                    </el-menu-item>
                     <el-menu-item index="/index/download">
                         <i class="el-icon-download"></i>
                         <span slot="title">下载管理</span>

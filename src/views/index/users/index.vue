@@ -45,7 +45,7 @@
                 <el-button type="danger" size="mini" :disabled="!selectedRows.length"
                     @click="multiDel">批量删除务</el-button>
                 <el-button type="success" size="mini" :disabled="!selectedRows.length"
-                    @click="multiUpdate">批量更新</el-button>
+                    @click="multiUpdate">批量采集作品</el-button>
             </div>
         </el-card>
         <el-card class="box-card table-box" v-loading="loading">
@@ -94,8 +94,8 @@
             }}</el-tag>
                     </div>
                     <div class="opt">
-                        <el-button size="mini" type="primary" @click="toAweme(item)">查看作品</el-button>
-                        <el-button size="mini" type="success" @click="sendUpdate(item)">更新数据</el-button>
+                        <el-button size="mini" type="primary" @click="toAweme(item)">已采集作品</el-button>
+                        <el-button size="mini" type="success" @click="sendUpdate(item)">采集作品</el-button>
                         <el-button size="mini" type="warning" @click="sendShare(item)">批量分享</el-button>
                         <el-button size="mini" type="danger" @click="delUser(item.uid)">删除</el-button>
                         <addGroup :user="item" @submitCall="getUserList"></addGroup>
@@ -141,7 +141,7 @@ export default {
                 currentPage: 1,//当前页
                 total: 0,//数据总条数
                 pageSize: 6,//每页条数
-                pageSizes: [6, 9, 12, 15, 18, 21, 24, 27, 30],//每页条数选择
+                pageSizes: [6, 9, 12, 15, 18, 21, 24, 27, 30, 60, 120, 180, 210],//每页条数选择
                 layout: "total, sizes, prev, pager, next, jumper"//组件布局
             },
             genderLabel: [
@@ -178,23 +178,7 @@ export default {
             })
         },
         multiDel() {
-            this.$confirm('确认要删除?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                delUser({
-                    uids: this.selectedRows.map(o => o.uid)
-                }).then(_ => {
-                    this.handleCurrentChange(1);
-                    this.selectedRows = [];
-                    this.$message({
-                        type: 'success',
-                        message: '删除成功!'
-                    });
-                })
-
-            })
+            this.delUser(this.selectedRows.map(o => o.uid))
         },
         multiUpdate() {
             if (this.selectedRows.length) {

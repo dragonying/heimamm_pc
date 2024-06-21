@@ -1,7 +1,7 @@
 <template>
     <!-- 新增或编辑用户 -->
     <span class="groupAdd">
-        <el-button type="info" @click="showDialog = true" :disabled="disabled" :size="size">归档</el-button>
+        <el-button type="info" @click="showDialog = true" :disabled="disabled" :size="size">分组</el-button>
         <el-dialog title="用户归档" width='40%' center :visible.sync="showDialog" append-to-body :close-on-click-modal="false" :show-close="false">
             <div class="hd">
                 <el-image class='avatar' v-for="item in users" :src="item.avatar" fit="cover"

@@ -45,6 +45,20 @@ export function userGroupEdit(data = {}, callback = null) {
         data: data
     }, callback)
 }
+export function groupUserList(data = {}, callback = null) {
+    return request({
+        url: '/groupUser/list',
+        method: 'post',
+        data: data
+    }, callback)
+}
+export function groupUserDel(data = {}, callback = null) {
+    return request({
+        url: '/groupUser/del',
+        method: 'post',
+        data: data
+    }, callback)
+}
 export function dataStatic(callback = null) {
     return request({
         url: '/dataStatic',
