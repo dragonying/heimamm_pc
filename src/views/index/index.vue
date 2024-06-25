@@ -5,7 +5,7 @@
                 <span :class="isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
                     @click="isCollapse = !isCollapse"></span>
                 <img src="@/assets/images/bklogo.png">
-                <h4>抖音助手</h4>
+                <h4>抖音询盘系统</h4>
             </div>
             <div class='right-box'>
                 <img v-if="user.avatar" :src="useravatar">

@@ -2,7 +2,7 @@
     <span class="userTask">
         <el-button type="primary" icon="el-icon-upload" @click="showDialog = true" :disabled="disabled"
             :size="size">创建任务</el-button>
-        <el-dialog title="创建任务" width='70%' center :visible.sync="showDialog" :close-on-click-modal="false"
+        <el-dialog title="创建任务" width='40%' center :visible.sync="showDialog" :close-on-click-modal="false"
             :show-close="false" append-to-body>
             <el-form class="taskForm" :model="form" :rules="rules" ref='form' :label-width='labelWidth'>
                 <div class="tip">
@@ -119,6 +119,10 @@
                     <el-switch v-model="form.filterDone"></el-switch>
                     <tip content="当天已执行的用户不再执行任务" />
                 </el-form-item>
+                <el-form-item label="采集用户信息" prop="inject">
+                    <el-switch v-model="form.inject"></el-switch>
+                    <tip content="执行任务的时候，同时采集用户的基本信息" />
+                </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button @click="close">取消</el-button>
@@ -209,7 +213,7 @@ export default {
                     text: [],
                     randomEmoji: true,
                 },
-
+                inject:false,
                 filterDone: true
             },
             rules: {

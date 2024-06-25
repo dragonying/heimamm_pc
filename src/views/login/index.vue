@@ -4,9 +4,9 @@
         <div class='top'>
             <a href="#">
                 <img class='logo' src="@/assets/images/logo.png" />
-                <h1>抖音助手</h1>
+                <h1>抖音询盘系统</h1>
             </a>
-            <span class='title'>抖音助手</span>
+            <span class='title'>抖音询盘系统</span>
             <i></i>
             <span class='sub-title'>用户登录</span>
         </div>
