@@ -65,4 +65,19 @@ export function dataStatic(callback = null) {
         method: 'post',
     }, callback)
 }
+export function addTask(data = {}, callback = null) {
+    return request({
+        url: '/addTask',
+        method: 'post',
+        data
+    }, callback)
+}
+export function getTask(data = {}, callback = null) {
+    return request({
+        url: '/getTask',
+        method: 'post',
+        data
+    }, callback)
+}
+
 

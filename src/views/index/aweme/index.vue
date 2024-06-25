@@ -35,8 +35,6 @@
                 <el-checkbox class="check" size="mini" @change="allChange" v-model="isAllChecked"
                     key="all">全选</el-checkbox>
                 <div>已选择 {{ selectedRows.length }} 项</div>
-                <el-button type="primary" size="mini" :disabled="!selectedRows.length" icon="el-icon-upload"
-                    @click="addDialog">创建任务</el-button>
                 <el-button type="success" size="mini" :disabled="!selectedRows.length"
                     @click="multiUpdate">批量采集评论</el-button>
                 <el-button type="danger" size="mini" :disabled="!selectedRows.length" @click="multiDel">批量删除</el-button>

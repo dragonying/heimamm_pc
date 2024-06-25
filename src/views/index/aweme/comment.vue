@@ -35,6 +35,7 @@
                         @click="multiUpdate">批量采集</el-button>
                     <addGroup :disabled="!multipleSelection.length" :user="multipleSelection" size="large"
                         @submitCall="getListData"></addGroup>
+                    <userTask size="large" :disabled="!multipleSelection.length" @submitCall="taskCallBack" />
                 </el-form-item>
             </el-form>
         </el-card>
@@ -121,6 +122,7 @@
 import { getCommentList } from '@/api/aweme';
 import addGroup from '@/views/index/components/addGroup';
 import { mapState } from 'vuex'
+import userTask from '@/views/index/components/userTask'
 import bus from '@/utils/bus';
 import WebSocketClientManager from '@/utils/WebSocketClientManager';
 const ws = WebSocketClientManager.getInstance();
@@ -129,7 +131,8 @@ export default {
     name: 'comment-list',
     //组件
     components: {
-        addGroup
+        addGroup,
+        userTask
     },
     data() {
         return {
@@ -148,7 +151,7 @@ export default {
                 currentPage: 1,//当前页
                 total: 0,//数据总条数
                 pageSize: 10,//每页条数
-                pageSizes: [10, 20, 30, 40, 50,100,200,300],//每页条数选择
+                pageSizes: [10, 20, 30, 40, 50, 100, 200, 300],//每页条数选择
                 layout: "total, sizes, prev, pager, next, jumper"//组件布局
             },
             multipleSelection: [],
@@ -248,6 +251,13 @@ export default {
                 this.loading = false;
             })
         },
+        taskCallBack(options) {
+            const taskOptions = { ...options, userList: this.multipleSelection };
+            bus.$emit('openLog');
+            this.$nextTick(() => {
+                ws.sendMessage({ cmd: 'userTask', content: taskOptions });
+            })
+        }
     }
 }
 </script>

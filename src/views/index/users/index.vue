@@ -40,8 +40,7 @@
                 <el-checkbox class="check" size="mini" @change="allChange" v-model="isAllChecked"
                     key="all">全选</el-checkbox>
                 <div>已选择 {{ selectedRows.length }} 项</div>
-                <el-button type="primary" size="mini" :disabled="!selectedRows.length" icon="el-icon-upload"
-                    @click="addDialog">创建任务</el-button>
+                <userTask size="mini" :disabled="!selectedRows.length" @submitCall="taskCallBack" />
                 <el-button type="danger" size="mini" :disabled="!selectedRows.length"
                     @click="multiDel">批量删除务</el-button>
                 <el-button type="success" size="mini" :disabled="!selectedRows.length"
@@ -114,6 +113,7 @@
 import { getUserList, delUser } from '@/api/user'
 import diaLogComponent from '@/views/index/users/add'
 import addGroup from '@/views/index/components/addGroup'
+import userTask from '@/views/index/components/userTask'
 import WebSocketClientManager from '@/utils/WebSocketClientManager';
 import { mapState } from 'vuex'
 import bus from '@/utils/bus';
@@ -123,7 +123,8 @@ export default {
     //组件
     components: {
         diaLogComponent,
-        addGroup
+        addGroup,
+        userTask
     },
     data() {
         return {
@@ -260,6 +261,13 @@ export default {
         allChange(e) {
             this.tableData = this.tableData.map(o => ({ ...o, isChecked: e }))
             this.isAllChecked = e;
+        },
+        taskCallBack(options) {
+            const taskOptions = { ...options, userList: this.selectedRows };
+            bus.$emit('openLog');
+            this.$nextTick(() => {
+                ws.sendMessage({ cmd: 'userTask', content: taskOptions });
+            })
         }
 
     },

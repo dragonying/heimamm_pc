@@ -24,6 +24,7 @@
                     <el-button type="danger" :disabled="!multipleSelection.length" @click="multiDel">批量删除</el-button>
                     <addGroup :disabled="!multipleSelection.length" :user="multipleSelection" size="large"
                         @submitCall="getListData"></addGroup>
+                    <userTask size="large" :disabled="!multipleSelection.length" @submitCall="taskCallBack" />
                 </el-form-item>
             </el-form>
         </el-card>
@@ -80,6 +81,7 @@
 import { groupUserDel, groupUserList } from '@/api/user';
 import addGroup from '@/views/index/components/addGroup';
 import { mapState } from 'vuex'
+import userTask from '@/views/index/components/userTask'
 import bus from '@/utils/bus';
 import WebSocketClientManager from '@/utils/WebSocketClientManager';
 const ws = WebSocketClientManager.getInstance();
@@ -88,7 +90,8 @@ export default {
     name: 'group-list',
     //组件
     components: {
-        addGroup
+        addGroup,
+        userTask
     },
     data() {
         return {
@@ -219,6 +222,13 @@ export default {
                 this.multipleSelection = [];
             })
         },
+        taskCallBack(options) {
+            const taskOptions = { ...options, userList: this.multipleSelection };
+            bus.$emit('openLog');
+            this.$nextTick(() => {
+                ws.sendMessage({ cmd: 'userTask', content: taskOptions });
+            })
+        }
     }
 }
 </script>
