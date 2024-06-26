@@ -54,6 +54,12 @@ const router = new VueRouter({
                     }
                 },
                 {
+                    path: 'search', component: resolve => require(['@/views/index/search'], resolve),
+                    meta: {
+                        title: '分类搜索',
+                    }
+                },
+                {
                     path: 'users', component: resolve => require(['@/views/index/users'], resolve),
                     meta: {
                         title: '用户列表',

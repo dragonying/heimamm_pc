@@ -22,6 +22,10 @@
                         <i class="el-icon-pie-chart"></i>
                         <span slot="title">数据概览</span>
                     </el-menu-item>
+                    <el-menu-item index="/index/search">
+                        <i class="el-icon-search"></i>
+                        <span slot="title">分类搜索</span>
+                    </el-menu-item>
                     <el-menu-item index="/index/users">
                         <i class="el-icon-user"></i>
                         <span slot="title">用户列表</span>
@@ -45,6 +49,11 @@
             </el-main>
         </el-container>
         <el-dialog title="执行日志" :visible.sync="dialogVisible" center width="60%" :before-close="handleClose">
+            <div class="operator">
+                <el-button type="success" size="mini" @click="clearLog">清空日志</el-button>
+                <el-progress type="circle" :percentage="percentage" :color="colors"></el-progress>
+                <el-button type="danger" size="mini" @click="stopTask">终止任务</el-button>
+            </div>
             <div class="console" ref="console">
                 <p v-for="(item, index) in logs" :key="index" :class="item.type">{{ item.msg }}</p>
             </div>
@@ -58,7 +67,6 @@ import token from '@/utils/token'
 import { userInfo, userLogout } from '@/api/index'
 import WebSocketClientManager from '@/utils/WebSocketClientManager';
 import bus from '@/utils/bus';
-
 export default {
     name: 'index',
     data() {
@@ -67,7 +75,20 @@ export default {
             dialogVisible: false,
             logs: [],
             user: { username: '龙英' },
-            messageListener: null
+            messageListener: null,
+            percentage: 0,
+            colors: [
+                { color: '#4758bf', percentage: 10 },
+                { color: '#5555b2', percentage: 20 },
+                { color: '#6351a4', percentage: 30 },
+                { color: '#734e95', percentage: 40 },
+                { color: '#8e477a', percentage: 50 },
+                { color: '#a44266', percentage: 60 },
+                { color: '#b63e55', percentage: 70 },
+                { color: '#cb3a40', percentage: 80 },
+                { color: '#dd362f', percentage: 90 },
+                { color: '#e83325', percentage: 100 }
+            ]
         }
     },
     methods: {
@@ -95,6 +116,12 @@ export default {
         },
         handleClose() {
             this.dialogVisible = false;
+        },
+        clearLog() {
+            this.logs = [];
+        },
+        stopTask() {
+            WebSocketClientManager.getInstance().sendMessage({ cmd: 'stopTask' });
         }
     },
     created() {
@@ -131,9 +158,13 @@ export default {
                 this.messageListener = res => {
                     const { success, type, data } = res;
                     if (!type) {
-                        const { cmd, msg, type } = data;
-                        this.logs.push(data);
-                        this.$refs.console.scrollBy(0, this.$refs.console.scrollHeight);
+                        const { cmd, msg, type, isProgress } = data;
+                        if (isProgress) {
+                            this.percentage = msg;
+                        } else {
+                            this.logs.push(data);
+                            this.$refs.console.scrollBy(0, this.$refs.console.scrollHeight);
+                        }
                     }
                 };
                 WebSocketClientManager.getInstance().addMessageListener(this.messageListener);
@@ -227,6 +258,41 @@ export default {
         background: #020202;
     }
 
+    .el-dialog {
+        .el-dialog__header {
+            height: 53px;
+            background: linear-gradient(to right, #01c4fa, #07b4fa, #0fa0fa, #1394fa);
+            padding: 18px 0;
+
+            .el-dialog__title,
+            .el-dialog__close {
+                color: white;
+                font-size: 14px;
+            }
+        }
+    }
+
+    .el-dialog--center .el-dialog__body {
+        padding-top: 0;
+
+        .operator {
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+
+            .el-progress {
+                position: absolute;
+                top: -190px;
+                left: 43%;
+
+                .el-progress-circle {
+                    background-color: #fff;
+                    border-radius: 50%;
+                }
+            }
+        }
+    }
 
     .console {
         height: 50vh;
