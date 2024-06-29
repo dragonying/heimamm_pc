@@ -115,9 +115,13 @@
                     <span>秒</span>
                     <tip content="操作每个用户之间的时间间隔" />
                 </el-form-item>
-                <el-form-item label="去重执行用户" prop="filterDone">
+                <el-form-item label="当日去重执行" prop="filterDone">
                     <el-switch v-model="form.filterDone"></el-switch>
                     <tip content="当天已执行的用户不再执行任务" />
+                </el-form-item>
+                <el-form-item label="完全去重执行" prop="filterOver">
+                    <el-switch v-model="form.filterOver"></el-switch>
+                    <tip content="只要用户执行过，就不再执行" />
                 </el-form-item>
                 <el-form-item label="采集用户信息" prop="inject">
                     <el-switch v-model="form.inject"></el-switch>
@@ -213,8 +217,9 @@ export default {
                     text: [],
                     randomEmoji: true,
                 },
-                inject:false,
-                filterDone: true
+                inject: false,
+                filterDone: true,
+                filterOver: true
             },
             rules: {
                 // groups: [

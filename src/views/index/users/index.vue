@@ -55,7 +55,7 @@
                     <div class="uheader" :style="{ backgroundImage: 'url(' + item.cover || '#fff' + ')' }">
                         <div class="uhbox">
                             <el-image class='avatar' :src="item.avatar" fit="cover"
-                                @click="toDy(item.sec_uid)"></el-image>
+                                @click="toDy(item.sec_uid)" lazy></el-image>
                             <div class="dtl">
                                 <span class="nickname">{{ item.nickname }}</span>
                                 <span>uid：{{ item.uid }}</span>

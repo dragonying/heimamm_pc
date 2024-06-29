@@ -54,7 +54,7 @@
                         <div class="videoBox">
                             <div class="videoInfo" v-if="item.video">
                                 <el-image class='cover' :src="item.video.cover" fit="cover"
-                                    @click="toPlay(item.video)"></el-image>
+                                    @click="toPlay(item.video)" lazy></el-image>
                                 <el-image class='animated' :src="item.video.animated_cover || item.video.cover"
                                     fit="cover" @click="toPlay(item.video)"></el-image>
                                 <div class="statistics">
@@ -109,7 +109,7 @@
                         <div class="videoBox">
                             <div class="videoInfo" v-if="item.video">
                                 <el-image class='img' :src="item.video.cover" fit="cover"
-                                    :preview-src-list="item.images"></el-image>
+                                    :preview-src-list="item.images" lazy></el-image>
                                 <div class="statistics">
                                     <i class="el-icon-thumb">{{ item.statistics.digg_count | formatNumber }}</i>
                                     <i class="el-icon-chat-dot-round">{{ item.statistics.comment_count | formatNumber
