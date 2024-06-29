@@ -80,6 +80,10 @@
                     <el-switch v-model="browserForm.headless"></el-switch>
                     <tip content="无头模式：不会唤起浏览器窗口。为了更好的体验，建议不开启" />
                 </el-form-item>
+                <el-form-item label="屏蔽媒体加载" prop="absorbMediaRequest">
+                    <el-switch v-model="browserForm.absorbMediaRequest"></el-switch>
+                    <tip content="可以减少图片，视频，音频的请求加载，节省带宽，提高运行效率，但会影响视觉体验" />
+                </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
                 <el-button type="primary" @click="onSubmitConf">确定</el-button>
@@ -141,6 +145,7 @@ export default {
             ],
             browserForm: {
                 headless: false,
+                absorbMediaRequest:false,
                 width: 1000,
                 height: 800,
                 timeout: 60000
