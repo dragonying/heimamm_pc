@@ -26,4 +26,7 @@ export default {
 .box-card .el-form .el-form-item{
     margin-bottom: 0;
 }
+.el-dialog {
+    margin-top: 2vh !important;
+}
 </style>

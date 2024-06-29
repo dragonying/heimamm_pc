@@ -85,6 +85,8 @@
                                 {{ scope.row.text }}
                             </div>
                         </el-tooltip>
+                        <el-image v-if="scope.row.image_list" class="commentImg"  :src="scope.row.image_list[0]" fit="cover"
+                            :preview-src-list="scope.row.image_list"></el-image>
                     </template>
                 </el-table-column>
                 <el-table-column sortable label="评论时间" align="center" min-width="130">
@@ -330,5 +332,9 @@ export default {
         }
 
     }
+    .commentImg{
+        height: 80px;
+    }
+    
 }
 </style>

@@ -41,3 +41,22 @@ export function randomColor() {
     }
     return color;
 }
+
+export function copyText(text) {
+    navigator.clipboard.writeText(text)
+        .then(function () {
+        }).catch(function (error) {
+            // 创建一个临时input元素
+            let tempInput = document.createElement("input");
+            // 设置input的value为要复制的文本内容
+            tempInput.value = text;
+            // 将input元素添加到文档流
+            document.body.appendChild(tempInput);
+            // 选中input中的文本内容
+            tempInput.select();
+            // 执行复制命令
+            document.execCommand("copy");
+            // 移除临时input元素
+            document.body.removeChild(tempInput);
+        });
+}

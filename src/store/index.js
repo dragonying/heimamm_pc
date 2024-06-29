@@ -1,8 +1,9 @@
 // 导入 Vue
-import Vue from 'vue'
+import Vue from 'vue';
 // 导入 Vuex
-import Vuex from 'vuex'
-import { getGroupOptions, dataStatic } from '@/api/user'
+import Vuex from 'vuex';
+import { Message } from 'element-ui';
+import { getGroupOptions, dataStatic, auth } from '@/api/user'
 
 // use一下
 Vue.use(Vuex)
@@ -11,7 +12,7 @@ Vue.use(Vuex)
 const store = new Vuex.Store({
   state: {
     // 默认没有值
-    userInfo: { username: '龙英' },//存储用户信息
+    userInfo: {},//存储用户信息
     power: [],//权限
     groupOptions: [],
     dataStatic: {},
@@ -22,6 +23,12 @@ const store = new Vuex.Store({
     },
     dataStatic(state, data) {
       state.dataStatic = data;
+    },
+    auth(state, data) {
+      state.userInfo = data;
+      if (!data?.code) {
+        Message.error('验证失败，卡密无效或过期');
+      }
     }
   },
   actions: {
@@ -30,6 +37,9 @@ const store = new Vuex.Store({
     },
     dataStatic({ commit }) {
       dataStatic(data => commit('dataStatic', data))
+    },
+    auth({ commit }, param = {}) {
+      auth(param, data => commit('auth', data));
     }
   }
 })

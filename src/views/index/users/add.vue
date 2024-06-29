@@ -68,6 +68,9 @@ export default {
             font-size: 14px;
         }
     }
+    .el-form{
+        margin-top: 20px;
+    }
 
     .intro .el-input__inner {
         height: 53px;

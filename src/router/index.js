@@ -34,7 +34,7 @@ Vue.use(VueRouter);
 //写法二
 const router = new VueRouter({
     routes: [
-        { path: '/', redirect: '/login' },//重定向
+        { path: '/', redirect: '/index' },//重定向
         {
             path: '/login', component: resolve => require(['@/views/login'], resolve),
             meta: {

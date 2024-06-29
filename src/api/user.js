@@ -18,6 +18,13 @@ export function getGroupOptions(callback = null) {
         method: 'post',
     }, callback)
 }
+export function auth(data={},callback = null) {
+    return request({
+        url: '/auth',
+        method: 'post',
+        data
+    }, callback)
+}
 
 
 //删除

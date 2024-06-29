@@ -17,11 +17,14 @@
                             :key="itm.value"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="评论数" prop="comment_sort">
+                <el-form-item label="评论数排序" prop="comment_sort">
                     <el-select class='min-input' v-model="searchItem.comment_sort">
                         <el-option v-for="itm in comment_sortLabel" :label="itm.title" :value="itm.value"
                             :key="itm.value"></el-option>
                     </el-select>
+                </el-form-item>
+                <el-form-item label="评论数>=" prop="commentMin">
+                    <el-input-number v-model="searchItem.commentMin" :min="0" :step="1"></el-input-number>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">搜索</el-button>
@@ -96,7 +99,7 @@
                             <el-button size="mini" type="info" @click="toDy(item)">抖音查看</el-button>
                             <el-button size="mini" type="primary" @click="toComment(item.aweme_id)">查看评论</el-button>
                             <el-button size="mini" type="success" @click="getComment(item)">采集评论</el-button>
-                            <el-button size="mini" type="warning">批量分享</el-button>
+                            <el-button size="mini" type="warning" @click="multiShare">批量分享</el-button>
                             <el-button size="mini" type="danger" @click="delAweme(item.aweme_id)">删除</el-button>
                         </div>
                     </div>
@@ -146,7 +149,7 @@
                             <el-button size="mini" type="info" @click="toDy(item)">抖音查看</el-button>
                             <el-button size="mini" type="primary" @click="toComment(item.aweme_id)">查看评论</el-button>
                             <el-button size="mini" type="success" @click="getComment(item)">采集评论</el-button>
-                            <el-button size="mini" type="warning">批量分享</el-button>
+                            <el-button size="mini" type="warning" @click="multiShare">批量分享</el-button>
                         </div>
                     </div>
 
@@ -196,14 +199,15 @@ export default {
                 desc: null,
                 media_type: null,
                 got: null,
-                comment_sort: null
+                comment_sort: null,
+                commentMin:0,
             },
             tableData: [],
             page: {
                 currentPage: 1,//当前页
                 total: 0,//数据总条数
                 pageSize: 6,//每页条数
-                pageSizes: [6, 9, 12, 15, 18, 21, 24, 27, 30,60,120,180,210],//每页条数选择
+                pageSizes: [6, 9, 12, 15, 18, 21, 24, 27, 30, 60, 120, 180, 210],//每页条数选择
                 layout: "total, sizes, prev, pager, next, jumper"//组件布局
             },
             media_typeLabel: [
@@ -223,7 +227,8 @@ export default {
             showCDialog: false,
             video: null,
             music: null,
-            isAllChecked: false
+            isAllChecked: false,
+            downTarget: null,
         }
     },
     watch: {
@@ -236,10 +241,11 @@ export default {
         }
     },
     methods: {
-        downloadVideo(item) {
+        downloadVideo(item, tryAgain = true) {
+            this.downTarget = item;
             this.loading = true;
-            const { aweme_id, video: { play_url } } = item;
-            download({ sourceUrl: play_url, aweme_id, type: 'mp4' }, res => {
+            const { aweme_id } = item;
+            download({ aweme_id, type: 'mp4' }, res => {
                 if (res?.url) {
                     this.$message({
                         type: 'success',
@@ -248,10 +254,18 @@ export default {
                     this.video = { play_url: res.url, format: 'mp4' };
                     this.showDialog = true;
                 } else {
-                    this.$message({
+                    tryAgain ? this.$message({
                         type: 'error',
-                        message: '下载失败，请更新数据再下载'
-                    });
+                        message: '下载失败，将自动更新数据再下载',
+                        duration:1000,
+                        onClose() {
+                            bus.$emit('openLog');
+                            ws.sendMessage({ cmd: 'getAwemeInfo', content: aweme_id });
+                        }
+                    }) : this.$message({
+                        type: 'error',
+                        message: '下载失败！！！！'
+                    })
                 }
                 this.loading = false;
             }).catch(e => {
@@ -383,6 +397,9 @@ export default {
         allChange(e) {
             this.tableData = this.tableData.map(o => ({ ...o, isChecked: e }))
             this.isAllChecked = e;
+        },
+        multiShare() {
+            this.$message({ type: 'warning', message: '开发中' })
         }
 
     },
@@ -402,7 +419,11 @@ export default {
         }
         bus.$on('getComment', value => {
             this.getAwemetList();
-        })
+        });
+        bus.$on('getAwemeInfo', value => {
+            this.downloadVideo(this.downTarget, false);
+        });
+
         this.getAwemetList();
 
     },

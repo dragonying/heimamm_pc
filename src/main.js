@@ -15,7 +15,6 @@ import '@/assets/css/base.css'
 //到入elem
 import ElementUI from 'element-ui';
 import { Message, Notification } from 'element-ui';
-
 // import 'element-ui/lib/theme-chalk/index.css'; //默认主题
 import '@/assets/scss/element-variables.scss' //使用自定义主题，修改后需要重新启动项目
 Vue.use(ElementUI);
@@ -23,19 +22,43 @@ Vue.use(ElementUI);
 import '@/utils/filters'
 //引入vuex
 import store from '@/store'
-
+['success', 'warning', 'info', 'error'].forEach(type => {
+  ElementUI.Message[type] = options => {
+      if (typeof options === 'string') {
+          options = {
+              message: options
+          };
+          options.duration = 2000;
+      }
+      options.type = type;
+      return ElementUI.Message(options);
+  };
+});
+['success', 'warning', 'info', 'error'].forEach(type => {
+  Notification[type] = options => {
+    if (typeof options === 'string' || isVNode(options)) {
+      options = {
+        message: options
+      };
+    }
+    options.type = type;
+    options.duration = 2000;
+    return Notification(options);
+  };
+});
 WebSocketClientManager.getInstance().addConnectStatusListener((status) => {
   Message({
     message: 'websocket connect status : ' + status,
     type: status === 'connect' ? 'success' : 'info',
-    duration: 5 * 1000
+    duration: 1000
   });
 });
 
 WebSocketClientManager.getInstance().addMessageListener((res) => {
-  const { success, type, data } = res;
+  const { success, type, data,noAuth } = res;
   if (type == 'tip') {
     success ? Notification.success(data) : Notification.error(data);
+    noAuth && bus.$emit('updateAuth');
   } else {
     const { cmd, msg, type } = data;
     if (cmd) {

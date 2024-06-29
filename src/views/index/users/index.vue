@@ -42,7 +42,7 @@
                 <div>已选择 {{ selectedRows.length }} 项</div>
                 <userTask size="mini" :disabled="!selectedRows.length" @submitCall="taskCallBack" />
                 <el-button type="danger" size="mini" :disabled="!selectedRows.length"
-                    @click="multiDel">批量删除务</el-button>
+                    @click="multiDel">批量删除</el-button>
                 <el-button type="success" size="mini" :disabled="!selectedRows.length"
                     @click="multiUpdate">批量采集作品</el-button>
             </div>
@@ -95,7 +95,7 @@
                     <div class="opt">
                         <el-button size="mini" type="primary" @click="toAweme(item)">已采集作品</el-button>
                         <el-button size="mini" type="success" @click="sendUpdate(item)">采集作品</el-button>
-                        <el-button size="mini" type="warning" @click="sendShare(item)">批量分享</el-button>
+                        <el-button size="mini" type="warning" @click="multiShare(item)">批量分享</el-button>
                         <el-button size="mini" type="danger" @click="delUser(item.uid)">删除</el-button>
                         <addGroup :user="item" @submitCall="getUserList"></addGroup>
                     </div>
@@ -189,11 +189,14 @@ export default {
                 })
             }
         },
-        sendShare(item) {
-            bus.$emit('openLog');
-            this.$nextTick(() => {
-                ws.sendMessage({ cmd: 'shareUserInfo', content: item });
-            })
+        // sendShare(item) {
+        //     bus.$emit('openLog');
+        //     this.$nextTick(() => {
+        //         ws.sendMessage({ cmd: 'shareUserInfo', content: item });
+        //     })
+        // },
+        multiShare() {
+            this.$message({ type: 'warning', message: '开发中' })
         },
         toDy(sec_uid) {
             window.open(`${process.env.VUE_APP_DOUYIN_HOST}/user/${sec_uid}`, '_blank');

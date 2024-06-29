@@ -17,3 +17,11 @@ export function userLogout(callback = null) {
         method: 'get',
     }, callback)
 }
+
+export function browserConf(data = {}, callback = null) {
+    return request({
+        url: '/browserConf',
+        method: 'post',
+        data: data
+    }, callback)
+}

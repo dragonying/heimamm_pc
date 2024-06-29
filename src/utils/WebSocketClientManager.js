@@ -1,6 +1,7 @@
 import token from '@/utils/token';
 import { Notification } from 'element-ui';
 
+
 const wshost = process.env.VUE_APP_WS_HOST;
 
 export default class WebSocketManager {

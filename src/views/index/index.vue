@@ -1,5 +1,6 @@
 <template>
-    <el-container class='index-container' v-loading.fullscreen.lock="!user.username">
+    <el-container class='index-container' v-loading.fullscreen.lock="show" element-loading-text="请先登录"
+        element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)">
         <el-header class='header'>
             <div class='left-box'>
                 <span :class="isCollapse ? 'el-icon-s-unfold' : 'el-icon-s-fold'"
@@ -8,11 +9,14 @@
                 <h4>抖音询盘系统</h4>
             </div>
             <div class='right-box'>
-                <img v-if="user.avatar" :src="useravatar">
-                <span class='username'>{{ user.username }}</span>
+                <!-- <img v-if="user.avatar" :src="useravatar"> -->
+                <span class='expireTime'>有效期至：{{ userInfo.expireTime }}</span>
                 <el-button size="small" type="warning" icon="el-icon-s-platform"
                     @click="dialogVisible = !dialogVisible">任务日志</el-button>
-                <el-button size="small" type="primary" icon="el-icon-warning" @click="logOut">退出</el-button>
+                <el-button size="small" type="success" icon="el-icon-setting" @click="browserSet">浏览器设置</el-button>
+                <el-button size="small" type="danger" icon="el-icon-delete-solid"
+                    @click="clearBrowser">清空浏览器</el-button>
+                <!-- <el-button size="small" type="primary" icon="el-icon-warning" @click="logOut">退出</el-button> -->
             </div>
         </el-header>
         <el-container>
@@ -22,10 +26,10 @@
                         <i class="el-icon-pie-chart"></i>
                         <span slot="title">数据概览</span>
                     </el-menu-item>
-                    <el-menu-item index="/index/search">
+                    <!-- <el-menu-item index="/index/search">
                         <i class="el-icon-search"></i>
                         <span slot="title">分类搜索</span>
-                    </el-menu-item>
+                    </el-menu-item> -->
                     <el-menu-item index="/index/users">
                         <i class="el-icon-user"></i>
                         <span slot="title">用户列表</span>
@@ -58,23 +62,69 @@
                 <p v-for="(item, index) in logs" :key="index" :class="item.type">{{ item.msg }}</p>
             </div>
         </el-dialog>
+        <el-dialog title="浏览器设置" :visible.sync="browserVisible" center width="40%" :before-close="handleCloseBrowser">
+            <el-form class="browserForm" :model="browserForm" :rules="rules" ref='browserForm' label-width="100px">
+                <el-form-item label="浏览器宽度" prop="width">
+                    <el-input-number v-model="browserForm.width" :min="100" :step="1"></el-input-number>
+                    <span>PX</span>
+                </el-form-item>
+                <el-form-item label="浏览器高度" prop="height">
+                    <el-input-number v-model="browserForm.height" :min="100" :step="1"></el-input-number>
+                    <span>PX</span>
+                </el-form-item>
+                <el-form-item label="超时时间" prop="timeout">
+                    <el-input-number v-model="browserForm.timeout" :min="1000" :step="100"></el-input-number>
+                    <span>毫秒</span>
+                </el-form-item>
+                <el-form-item label="无头模式" prop="headless">
+                    <el-switch v-model="browserForm.headless"></el-switch>
+                    <tip content="无头模式：不会唤起浏览器窗口。为了更好的体验，建议不开启" />
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="onSubmitConf">确定</el-button>
+            </div>
+        </el-dialog>
+        <el-dialog title="登录" :visible.sync="show" center width="40%" :close-on-click-modal="false" :show-close="false">
+            <el-form class="loginForm" :model="loginForm" :rules="loginRules" ref='loginForm' label-width="60px">
+                <el-form-item label="设备码" prop="deviceId" disabled>
+                    <el-input :value="userInfo.deviceId">
+                        <el-button slot="append" type="warning" @click="copy">复制</el-button>
+                    </el-input>
+                </el-form-item>
+                <el-form-item label="卡密" prop="code">
+                    <el-input v-model="loginForm.code" placeholder="请输入卡密"></el-input>
+                </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button type="primary" @click="onSubmitLogin">确定</el-button>
+            </div>
+            <el-alert title="请复制设备码给管理员获取卡密激活" type="warning" show-icon :closable="false">
+            </el-alert>
+        </el-dialog>
     </el-container>
 </template>
 
 <script>
 
-import token from '@/utils/token'
-import { userInfo, userLogout } from '@/api/index'
+import { browserConf } from '@/api/index';
+import { auth } from '@/api/user'
+import { mapState } from 'vuex';
 import WebSocketClientManager from '@/utils/WebSocketClientManager';
+import tip from '@/views/index/components/tip';
 import bus from '@/utils/bus';
+import { copyText } from '@/utils/tool';
 export default {
     name: 'index',
+    components: {
+        tip
+    },
     data() {
         return {
             isCollapse: false,//折叠导航
             dialogVisible: false,
+            browserVisible: false,
             logs: [],
-            user: { username: '龙英' },
             messageListener: null,
             percentage: 0,
             colors: [
@@ -88,31 +138,74 @@ export default {
                 { color: '#cb3a40', percentage: 80 },
                 { color: '#dd362f', percentage: 90 },
                 { color: '#e83325', percentage: 100 }
-            ]
+            ],
+            browserForm: {
+                headless: false,
+                width: 1000,
+                height: 800,
+                timeout: 60000
+            },
+            loginForm: {
+                code: null
+            },
+            rules: {
+                width: [
+                    { required: false, message: '请输入', trigger: 'blur' },
+                ],
+                height: [
+                    { required: false, message: '请输入', trigger: 'blur' },
+                ],
+                timeout: [
+                    { required: false, message: '请输入', trigger: 'blur' },
+                ],
+            },
+            loginRules: {
+                code: [
+                    { required: true, message: '请输入卡密', trigger: 'blur' },
+                ],
+            }
         }
     },
     methods: {
-        //退出
-        logOut() {
-            this.$confirm('是否确认退出?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                type: 'warning'
-            }).then(() => {
-                userLogout(() => {
-                    token.delToken();
-                    // 删除Vuex中的数据
-                    this.$store.state.userInfo = undefined;
-                    this.$message({
-                        type: 'success',
-                        message: '退出成功!',
-                        onClose: () => {
-                            this.$router.push('/login');
-                        }
-                    });
-                });
+        copy() {
+            copyText(this.userInfo.deviceId);
+            this.$message.success('复制成功');
+        },
+        browserSet() {
 
-            }).catch(() => { });
+            browserConf({}, (data) => {
+                this.browserForm = { ...this.browserForm, ...data };
+            });
+            this.browserVisible = true;
+        },
+        onSubmitConf() {
+            this.$refs.browserForm.validate(valid => {
+                if (valid) {
+                    browserConf(this.browserForm, () => {
+                        this.handleCloseBrowser();
+                        this.$message.success('设置成功');
+                    })
+                } else {
+                    this.$message.warning('请完善信息！');
+                }
+
+            });
+        },
+        onSubmitLogin() {
+            this.$refs.loginForm.validate(valid => {
+                if (valid) {
+                    const { code } = this.loginForm;
+                    auth({ code }, data => {
+                        window.location.reload(true);
+                    })
+                } else {
+                    this.$message.warning('请输入卡密');
+                }
+
+            });
+        },
+        handleCloseBrowser() {
+            this.browserVisible = false;
         },
         handleClose() {
             this.dialogVisible = false;
@@ -122,35 +215,38 @@ export default {
         },
         stopTask() {
             WebSocketClientManager.getInstance().sendMessage({ cmd: 'stopTask' });
-        }
+        },
+        clearBrowser() {
+            this.$confirm('清空浏览器，将会清除已登录的账号，需要重新登录', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+            }).then(() => {
+                this.dialogVisible = true;
+                WebSocketClientManager.getInstance().sendMessage({ cmd: 'clearBrowser' });
+            })
+        },
     },
     created() {
-        //获取用户信息
-        userInfo(res => {
-            if (res.status === 0) {
-                this.$message.warning('你的号被封了,请联系管理员解封!!')
-                this.$router.push('/login');
-                return;
-            }
-            this.$store.state.userInfo = res.user;
-            this.$store.state.power = res.power;
-
-            this.user = res.user;
-        });
         bus.$on('openLog', value => {
             this.dialogVisible = true;
         });
         bus.$on('closeLog', value => {
             this.dialogVisible = false;
             this.$store.dispatch('dataStatic');
-        })
+        });
+        bus.$on('updateAuth', value => {
+            this.$store.dispatch('auth');
+        });
+        this.$store.dispatch('auth');
         this.$store.dispatch('getGroupOptions');
         this.$store.dispatch('dataStatic');
     },
     computed: {
-        useravatar() {
-            return process.env.VUE_APP_BASEURL + this.user.avatar
-        }
+        ...mapState({
+            userInfo: state => state.userInfo,
+            show: state => !Boolean(state.userInfo.code)
+        }),
     },
     watch: {
         dialogVisible(v) {
@@ -160,7 +256,7 @@ export default {
                     if (!type) {
                         const { cmd, msg, type, isProgress } = data;
                         if (isProgress) {
-                            this.percentage = msg;
+                            this.percentage = msg*1;
                         } else {
                             this.logs.push(data);
                             this.$refs.console.scrollBy(0, this.$refs.console.scrollHeight);
@@ -173,6 +269,8 @@ export default {
                 // this.logs = [];
             }
         }
+    },
+    mounted() {
     },
     destroyed() {
     }
@@ -217,10 +315,11 @@ export default {
                 border-radius: 50%;
             }
 
-            .username {
+            .expireTime {
                 font-size: 14px;
-                color: #636363;
+                color: #12ca78;
                 margin: 0 38px 0 9px;
+                font-weight: bold;
             }
         }
 
@@ -259,6 +358,8 @@ export default {
     }
 
     .el-dialog {
+
+
         .el-dialog__header {
             height: 53px;
             background: linear-gradient(to right, #01c4fa, #07b4fa, #0fa0fa, #1394fa);
@@ -283,8 +384,8 @@ export default {
 
             .el-progress {
                 position: absolute;
-                top: -190px;
-                left: 43%;
+                top: -6px;
+                right: -170px;
 
                 .el-progress-circle {
                     background-color: #fff;
@@ -295,7 +396,7 @@ export default {
     }
 
     .console {
-        height: 50vh;
+        height: 70vh;
         overflow-y: auto;
         font-size: 12px;
         border: 1px solid #fff;
@@ -321,5 +422,18 @@ export default {
         }
     }
 
+    .browserForm,
+    .loginForm {
+        padding-top: 20px;
+
+        .el-input-number {
+            margin-right: 10px;
+        }
+    }
+
+}
+
+.el-loading-mask {
+    z-index: 100 !important;
 }
 </style>

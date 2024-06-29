@@ -2,8 +2,8 @@
 //封装请求
 import axios from 'axios'
 import { Message } from 'element-ui';
-import token from '@/utils/token';
 import router from '@/router'
+import bus from '@/utils/bus';
 
 
 // 相当于axios副本
@@ -23,10 +23,9 @@ instance.interceptors.request.use(function (config) {
 
 // 添加响应拦截器
 instance.interceptors.response.use(function (response) {
-    if (response.data.code == 206) {
-        Message.error('token有误，请重新登录');
-        token.delToken();
-        router.push('/login');
+    if (response.data.code == 403) {
+        Message.error('验证失败，卡密无效或过期');
+        bus.$emit('updateAuth');
     }
     return response;
 }, function (error) {
@@ -42,17 +41,17 @@ instance.interceptors.response.use(function (response) {
  * @param {*} needToken 是否需要token
  */
 export default function (option = {}, success = null, failed = null, needToken = true) {
-    if (needToken) {
-        token.setToken('666');
-        let userToken = token.getToken();
-        if (!userToken) {
-            Message.warning('您还未登录,请先登录！');
-            //没有token跳转登录页
-            router.push('/login');
-            return;
-        }
-        option.headers = { 'token': userToken }
-    }
+    // if (needToken) {
+        // token.setToken('666');
+        // let userToken = token.getToken();
+        // if (!userToken) {
+        //     Message.warning('您还未登录,请先登录！');
+        //     //没有token跳转登录页
+        //     router.push('/login');
+        //     return;
+        // }
+        // option.headers = { 'token': userToken }
+    // }
     return instance(option).then(res => {
         typeof success == 'function' ? (res.data.code == 200 ? success(res.data.data) : (typeof failed == 'function' ? failed(res.data) : Message.error(res.data.message || res.data.msg))) : console.log(res)
     }).catch(error => {
