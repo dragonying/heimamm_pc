@@ -28,6 +28,15 @@
                         <el-option v-for="itm in options" :label="itm" :value="itm" :key="itm.value"></el-option>
                     </el-select>
                 </el-form-item>
+                <!-- <el-form-item label="回复数排序" prop="reply_sort">
+                    <el-select class='min-input' v-model="searchItem.reply_sort">
+                        <el-option v-for="itm in reply_sortLabel" :label="itm.title" :value="itm.value"
+                            :key="itm.value"></el-option>
+                    </el-select>
+                </el-form-item> -->
+                <el-form-item label="含图评论" prop="hasImg">
+                    <el-checkbox v-model="searchItem.hasImg"></el-checkbox>
+                </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="onSubmit">搜索</el-button>
                     <el-button @click='clear'>清除</el-button>
@@ -85,8 +94,8 @@
                                 {{ scope.row.text }}
                             </div>
                         </el-tooltip>
-                        <el-image v-if="scope.row.image_list" class="commentImg"  :src="scope.row.image_list[0]" fit="cover"
-                            :preview-src-list="scope.row.image_list"></el-image>
+                        <el-image v-if="scope.row.image_list" class="commentImg" :src="scope.row.image_list[0]"
+                            fit="cover" :preview-src-list="scope.row.image_list"></el-image>
                     </template>
                 </el-table-column>
                 <el-table-column sortable label="评论时间" align="center" min-width="130">
@@ -146,7 +155,9 @@ export default {
                 ip_label: null,
                 text: null,
                 got: null,
-                group: null
+                group: null,
+                reply_sort:null,
+                hasImg: false
             },
             tableData: [],
             page: {
@@ -161,6 +172,10 @@ export default {
                 { title: '已采集', value: 'y' },
                 { title: '未采集', value: 'n' },
             ],
+            reply_sortLabel: [
+                { title: '升序', value: 'sort' },
+                { title: '降序', value: 'rsort' },
+            ]
         }
     },
     watch: {
@@ -332,9 +347,10 @@ export default {
         }
 
     }
-    .commentImg{
+
+    .commentImg {
         height: 80px;
     }
-    
+
 }
 </style>

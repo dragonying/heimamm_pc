@@ -83,6 +83,9 @@
                         <span>作品：{{ item.aweme_count | formatNumber }}</span>
                     </div>
                     <div class="uinfo">
+                        <span>最新活跃时间：{{ item.alive_time | formatDateTime }}</span>
+                    </div>
+                    <div class="uinfo">
                         <el-tooltip placement="top" :content="item.signature">
                             <p class="signature">签名：{{ item.signature }}</p>
                         </el-tooltip>
