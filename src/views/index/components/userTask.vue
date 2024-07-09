@@ -115,7 +115,7 @@
                 <el-form-item label="操作冷却时长" prop="defaultDelay">
                     <el-input-number v-model="form.defaultDelay" :min="1" :step="1"></el-input-number>
                     <span>秒</span>
-                    <tip content="每一步模拟人工点击行为的操作时间" />
+                    <tip content="每一步模拟人工点击行为的操作间隔时间" />
                 </el-form-item>
                 <el-form-item label="执行间隔时长" prop="period">
                     <el-input-number v-model="form.period" :min="1" :step="1"></el-input-number>

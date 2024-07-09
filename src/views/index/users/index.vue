@@ -41,8 +41,7 @@
                     key="all">全选</el-checkbox>
                 <div>已选择 {{ selectedRows.length }} 项</div>
                 <userTask size="mini" :disabled="!selectedRows.length" @submitCall="taskCallBack" />
-                <el-button type="danger" size="mini" :disabled="!selectedRows.length"
-                    @click="multiDel">批量删除</el-button>
+                <el-button type="danger" size="mini" :disabled="!selectedRows.length" @click="multiDel">批量删除</el-button>
                 <el-button type="success" size="mini" :disabled="!selectedRows.length"
                     @click="multiUpdate">批量采集作品</el-button>
             </div>
@@ -54,8 +53,8 @@
                         @change="(e) => onChange(e, index)"></el-checkbox>
                     <div class="uheader" :style="{ backgroundImage: 'url(' + item.cover || '#fff' + ')' }">
                         <div class="uhbox">
-                            <el-image class='avatar' :src="item.avatar" fit="cover"
-                                @click="toDy(item.sec_uid)" lazy></el-image>
+                            <el-image class='avatar' :src="item.avatar" fit="cover" @click="toDy(item.sec_uid)"
+                                lazy></el-image>
                             <div class="dtl">
                                 <span class="nickname">{{ item.nickname }}</span>
                                 <span>uid：{{ item.uid }}</span>
@@ -98,7 +97,7 @@
                     <div class="opt">
                         <el-button size="mini" type="primary" @click="toAweme(item)">已采集作品</el-button>
                         <el-button size="mini" type="success" @click="sendUpdate(item)">采集作品</el-button>
-                        <el-button size="mini" type="warning" @click="multiShare(item)">批量分享</el-button>
+                        <shareTask :items="item" @submitCall="multiShare" />
                         <el-button size="mini" type="danger" @click="delUser(item.uid)">删除</el-button>
                         <addGroup :user="item" @submitCall="getUserList"></addGroup>
                     </div>
@@ -117,6 +116,7 @@ import { getUserList, delUser } from '@/api/user'
 import diaLogComponent from '@/views/index/users/add'
 import addGroup from '@/views/index/components/addGroup'
 import userTask from '@/views/index/components/userTask'
+import shareTask from '@/views/index/components/shareTask'
 import WebSocketClientManager from '@/utils/WebSocketClientManager';
 import { mapState } from 'vuex'
 import bus from '@/utils/bus';
@@ -127,7 +127,8 @@ export default {
     components: {
         diaLogComponent,
         addGroup,
-        userTask
+        userTask,
+        shareTask
     },
     data() {
         return {
@@ -198,8 +199,9 @@ export default {
         //         ws.sendMessage({ cmd: 'shareUserInfo', content: item });
         //     })
         // },
-        multiShare() {
-            this.$message({ type: 'warning', message: '开发中' })
+        multiShare(param) {
+            bus.$emit('openLog');
+            ws.sendMessage({ cmd: 'shareUser', content: param });
         },
         toDy(sec_uid) {
             window.open(`${process.env.VUE_APP_DOUYIN_HOST}/user/${sec_uid}`, '_blank');

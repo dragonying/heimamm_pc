@@ -53,8 +53,8 @@
                             @change="(e) => onChange(e, index)"></el-checkbox>
                         <div class="videoBox">
                             <div class="videoInfo" v-if="item.video">
-                                <el-image class='cover' :src="item.video.cover" fit="cover"
-                                    @click="toPlay(item.video)" lazy></el-image>
+                                <el-image class='cover' :src="item.video.cover" fit="cover" @click="toPlay(item.video)"
+                                    lazy></el-image>
                                 <el-image class='animated' :src="item.video.animated_cover || item.video.cover"
                                     fit="cover" @click="toPlay(item.video)"></el-image>
                                 <div class="statistics">
@@ -99,7 +99,7 @@
                             <el-button size="mini" type="info" @click="toDy(item)">抖音查看</el-button>
                             <el-button size="mini" type="primary" @click="toComment(item.aweme_id)">查看评论</el-button>
                             <el-button size="mini" type="success" @click="getComment(item)">采集评论</el-button>
-                            <el-button size="mini" type="warning" @click="multiShare">批量分享</el-button>
+                            <shareTask :items="item" @submitCall="multiShare" />
                             <el-button size="mini" type="danger" @click="delAweme(item.aweme_id)">删除</el-button>
                         </div>
                     </div>
@@ -149,7 +149,7 @@
                             <el-button size="mini" type="info" @click="toDy(item)">抖音查看</el-button>
                             <el-button size="mini" type="primary" @click="toComment(item.aweme_id)">查看评论</el-button>
                             <el-button size="mini" type="success" @click="getComment(item)">采集评论</el-button>
-                            <el-button size="mini" type="warning" @click="multiShare">批量分享</el-button>
+                            <shareTask :items="item" @submitCall="multiShare" />
                         </div>
                     </div>
 
@@ -181,6 +181,7 @@ import { getAwemetList, delAweme, download } from '@/api/aweme'
 import diaLogComponent from '@/views/index/aweme/add'
 import commentComponent from '@/views/index/aweme/comment'
 import WebSocketClientManager from '@/utils/WebSocketClientManager';
+import shareTask from '@/views/index/components/shareTask'
 import bus from '@/utils/bus';
 const ws = WebSocketClientManager.getInstance();
 
@@ -189,7 +190,8 @@ export default {
     //组件
     components: {
         diaLogComponent,
-        commentComponent
+        commentComponent,
+        shareTask
     },
     data() {
         return {
@@ -200,7 +202,7 @@ export default {
                 media_type: null,
                 got: null,
                 comment_sort: null,
-                commentMin:0,
+                commentMin: 0,
             },
             tableData: [],
             page: {
@@ -257,7 +259,7 @@ export default {
                     tryAgain ? this.$message({
                         type: 'error',
                         message: '下载失败，将自动更新数据再下载',
-                        duration:1000,
+                        duration: 1000,
                         onClose() {
                             bus.$emit('openLog');
                             ws.sendMessage({ cmd: 'getAwemeInfo', content: aweme_id });
@@ -398,8 +400,9 @@ export default {
             this.tableData = this.tableData.map(o => ({ ...o, isChecked: e }))
             this.isAllChecked = e;
         },
-        multiShare() {
-            this.$message({ type: 'warning', message: '开发中' })
+        multiShare(param) {
+            bus.$emit('openLog');
+            ws.sendMessage({ cmd: 'shareAweme', content: param });
         }
 
     },
