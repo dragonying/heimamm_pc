@@ -27,6 +27,6 @@ export default {
     margin-bottom: 0;
 }
 .el-dialog {
-    margin-top: 2vh !important;
+    margin-top: 3vh !important;
 }
 </style>

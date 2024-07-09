@@ -53,7 +53,7 @@ export default {
         }
     },
     mounted() {
-        this.files = this.fileList.map(o => ({ uid: o, url: o, name: o, percentage: 100, response: { data: { file: o } } }))
+        this.files = this.fileList.map(o => ({ uid: o, url: `${process.env.VUE_APP_BASEURL}${o}`, name: o, percentage: 100, response: { data: { file: o } } }))
     }
 }
 </script>

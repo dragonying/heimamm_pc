@@ -51,6 +51,13 @@
                         <el-form-item label="自动最佳评论" prop="autoSendBestWord">
                             <el-switch v-model="form.viewPostOption.commentOption.autoSendBestWord"></el-switch>
                             <tip content="会从作品评论区列表中筛选出点赞最高的评论内容，作为你本次的评论输出" />
+                            <span v-if="form.viewPostOption.commentOption.autoSendBestWord">
+                                <span class="pn">筛选前</span>
+                                <el-input-number v-model="form.viewPostOption.commentOption.pageNum" :min="1"
+                                    :step="1"></el-input-number>
+                                <span class="pn">页评论数据</span>
+                                <tip content="由于评论内容可能有非常多页，为了方便高效，从指定页数中筛选最近评论" />
+                            </span>
                         </el-form-item>
                         <div v-if="!form.viewPostOption.commentOption.autoSendBestWord">
                             <el-form-item label="作品评论话术">
@@ -207,6 +214,7 @@ export default {
                     commentOption: {
                         text: [],
                         autoSendBestWord: false,
+                        pageNum:5,
                         randomEmoji: true,
                         atUser: null,
                         uploadRate: 10,
@@ -346,6 +354,10 @@ export default {
             margin-left: 10px;
             font-size: 12px;
         }
+    }
+
+    .pn {
+        margin:0 5px;
     }
 
     .setConf {
