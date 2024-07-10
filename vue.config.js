@@ -2,6 +2,7 @@
 module.exports = {
   publicPath: './',
   lintOnSave: false,
+  productionSourceMap: false,
   devServer: {
     proxy: {
       '/user': {

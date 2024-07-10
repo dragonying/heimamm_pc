@@ -8,8 +8,8 @@ import bus from '@/utils/bus';
 
 // 相当于axios副本
 const instance = axios.create({
-    // baseURL: process.env.VUE_APP_BASEURL,//设置基地址
-    baseURL:'/',//设置基地址
+    baseURL: process.env.VUE_APP_BASEURL,//设置基地址
+    // baseURL:'/',//设置基地址
     withCredentials: true, //配置接收cookie
 });
 

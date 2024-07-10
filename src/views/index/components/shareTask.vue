@@ -3,7 +3,7 @@
         <el-button type="warning" @click="showDialog = true" :size="size">批量分享</el-button>
         <el-dialog title="创建分享任务" width='40%' center :visible.sync="showDialog" :close-on-click-modal="false"
             :show-close="false" append-to-body>
-            <el-form class="taskForm" :model="form" :rules="rules" ref='form' :label-width='labelWidth'>
+            <el-form class="taskForm" :model="form" :rules="rules" ref='form'>
                 <div class="tip">
                     <span>运行过程中，请不要在浏览器窗口中移动鼠标，以免分享窗口关闭</span>
                 </div>
@@ -48,7 +48,6 @@ export default {
     data() {
         return {
             showDialog: false,
-            labelWidth: '100px',
             form: {
                 delayTime: 3000,
                 limit: 100
