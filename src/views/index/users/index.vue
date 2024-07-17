@@ -73,11 +73,15 @@
                     </div>
                     <div class="uinfo">
                         <span>抖音号：{{ item.unique_id }}</span>
-                        <span>粉丝：{{ item.follower_count | formatNumber }}</span>
+                        <span class="follower" @click="viewFollow(item, 'follower')">粉丝：{{ item.follower_count |
+                formatNumber }}
+                        </span>
                         <span>获赞：{{ item.total_favorited | formatNumber }}</span>
                     </div>
                     <div class="uinfo">
-                        <span>关注：{{ item.following_count | formatNumber }}</span>
+                        <span class="following" @click="viewFollow(item, 'following')">关注：{{ item.following_count |
+                formatNumber }}
+                        </span>
                         <span>喜欢：{{ item.favoriting_count | formatNumber }}</span>
                         <span>作品：{{ item.aweme_count | formatNumber }}</span>
                     </div>
@@ -109,6 +113,7 @@
             </el-pagination>
         </el-card>
         <diaLogComponent ref='dialog'></diaLogComponent>
+        <followTab ref='followTab' :user="user" @beforeClose="beforeClose" />
     </div>
 </template>
 <script>
@@ -117,6 +122,7 @@ import diaLogComponent from '@/views/index/users/add'
 import addGroup from '@/views/index/components/addGroup'
 import userTask from '@/views/index/components/userTask'
 import shareTask from '@/views/index/components/shareTask'
+import followTab from '@/views/index/users/followTab'
 import WebSocketClientManager from '@/utils/WebSocketClientManager';
 import { mapState } from 'vuex'
 import bus from '@/utils/bus';
@@ -128,7 +134,8 @@ export default {
         diaLogComponent,
         addGroup,
         userTask,
-        shareTask
+        shareTask,
+        followTab
     },
     data() {
         return {
@@ -157,7 +164,8 @@ export default {
                 { title: '已采集', value: 'y' },
                 { title: '未采集', value: 'n' },
             ],
-            isAllChecked: false
+            isAllChecked: false,
+            user: null
         }
     },
     watch: {
@@ -170,6 +178,14 @@ export default {
         }
     },
     methods: {
+        viewFollow(user, activeName) {
+            this.$refs.followTab.showDialog = true;
+            this.$refs.followTab.activeName = activeName;
+            this.user = user;
+        },
+        beforeClose() {
+            this.user = null;
+        },
         toAweme(item) {
             this.$router.push({
                 path: "/index/aweme",
@@ -342,6 +358,11 @@ export default {
         position: relative;
         width: 32%;
         margin-right: 1%;
+
+        .follower,
+        .following {
+            cursor: pointer;
+        }
 
         .check {
             position: absolute;

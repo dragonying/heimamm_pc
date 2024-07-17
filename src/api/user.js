@@ -86,5 +86,19 @@ export function getTask(data = {}, callback = null) {
         data
     }, callback)
 }
+export function followingList(data = {}, callback = null) {
+    return request({
+        url: '/followingList',
+        method: 'post',
+        data
+    }, callback)
+}
+export function followerList(data = {}, callback = null) {
+    return request({
+        url: '/followerList',
+        method: 'post',
+        data
+    }, callback)
+}
 
 
