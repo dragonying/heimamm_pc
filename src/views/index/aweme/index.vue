@@ -171,9 +171,12 @@
         <el-dialog title="音频播放" width="600" center :visible.sync="showMDialog" @closed="closeMHandler">
             <audio :src="music" v-if="music" controls></audio>
         </el-dialog>
-        <el-dialog title="评论信息" fullscreen center :visible.sync="showCDialog" @closed="closeCHandler">
+        <el-drawer title="评论信息" :visible.sync="showCDialog" direction="ltr" size="97%" @before-close="closeCHandler">
             <commentComponent ref="comment" />
-        </el-dialog>
+        </el-drawer>
+        <!-- <el-dialog title="评论信息" fullscreen center :visible.sync="showCDialog" @closed="closeCHandler">
+            <commentComponent ref="comment" />
+        </el-dialog> -->
     </div>
 </template>
 <script>
@@ -213,10 +216,12 @@ export default {
                 layout: "total, sizes, prev, pager, next, jumper"//组件布局
             },
             media_typeLabel: [
+                { title: '全部', value: null },
                 { title: '视频', value: 4 },
                 { title: '图文', value: 2 },
             ],
             got_typeLabel: [
+                { title: '全部', value: null },
                 { title: '已采集', value: 'y' },
                 { title: '未采集', value: 'n' },
             ],
@@ -612,6 +617,11 @@ export default {
         video {
             width: 50%;
         }
+    }
+
+     .el-drawer__body {
+        overflow: auto;
+        padding: 0 10px;
     }
 
 }

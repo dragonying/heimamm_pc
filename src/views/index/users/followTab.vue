@@ -1,5 +1,17 @@
 <template>
-    <el-dialog title="用户粉丝和关注列表" width='90%' center :visible.sync="showDialog" append-to-body>
+    <div class="followPan">
+        <el-drawer title="用户粉丝和关注列表" :visible.sync="showDialog" direction="ltr" size="90%">
+            <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="粉丝" name="follower">
+                    <followTabItem ref="follower" type="follower" />
+                </el-tab-pane>
+                <el-tab-pane label="关注" name="following">
+                    <followTabItem ref="following" type="following" />
+                </el-tab-pane>
+            </el-tabs>
+        </el-drawer>
+    </div>
+    <!-- <el-dialog title="用户粉丝和关注列表" width='90%' center :visible.sync="showDialog" append-to-body>
         <el-tabs v-model="activeName" @tab-click="handleClick">
             <el-tab-pane label="粉丝" name="follower">
                 <followTabItem ref="follower" type="follower"/>
@@ -8,7 +20,7 @@
                 <followTabItem ref="following" type="following" />
             </el-tab-pane>
         </el-tabs>
-    </el-dialog>
+    </el-dialog> -->
 </template>
 
 <script>
@@ -27,7 +39,7 @@ export default {
     data() {
         return {
             showDialog: false,
-            activeName:'follower'
+            activeName: 'follower'
         }
     },
     watch: {
@@ -49,5 +61,10 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.followTab {}
+.followPan {
+   ::v-deep .el-drawer__body {
+        overflow: auto;
+        padding: 0 10px;
+    }
+}
 </style>

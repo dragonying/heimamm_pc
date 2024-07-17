@@ -23,6 +23,12 @@
                             :key="itm.value"></el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="粉丝与关注采集状态" prop="followGot">
+                    <el-select class='min-input' v-model="searchItem.followGot">
+                        <el-option v-for="itm in got_typeLabel" :label="itm.title" :value="itm.value"
+                            :key="itm.value"></el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item label="用户组" prop="group">
                     <el-select class='middle-input' v-model="searchItem.group">
                         <el-option v-for="itm in options" :label="itm" :value="itm" :key="itm.value"></el-option>
@@ -44,8 +50,10 @@
                 <el-button type="danger" size="mini" :disabled="!selectedRows.length" @click="multiDel">批量删除</el-button>
                 <el-button type="success" size="mini" :disabled="!selectedRows.length"
                     @click="multiUpdate">批量采集作品</el-button>
-                <follow title="批量采集TA的粉丝" :disabled="!selectedRows.length"  size="mini"  type="danger" :items="selectedRows" cmd="follower" />
-                <follow title="批量采集TA的关注" :disabled="!selectedRows.length"  size="mini"  type="danger" :items="selectedRows" cmd="following" />
+                <follow title="批量采集TA的粉丝" :disabled="!selectedRows.length" size="mini" type="danger"
+                    :items="selectedRows" cmd="follower" />
+                <follow title="批量采集TA的关注" :disabled="!selectedRows.length" size="mini" type="danger"
+                    :items="selectedRows" cmd="following" />
             </div>
         </el-card>
         <el-card class="box-card table-box" v-loading="loading">
@@ -75,13 +83,15 @@
                     </div>
                     <div class="uinfo">
                         <span>抖音号：{{ item.unique_id }}</span>
-                        <span class="follower" @click="viewFollow(item, 'follower')">粉丝：{{ item.follower_count |
+                        <span :class="item.gotFollower ? 'follower got' : 'follower'"
+                            @click="viewFollow(item, 'follower')">粉丝：{{ item.follower_count |
                 formatNumber }}
                         </span>
                         <span>获赞：{{ item.total_favorited | formatNumber }}</span>
                     </div>
                     <div class="uinfo">
-                        <span class="following" @click="viewFollow(item, 'following')">关注：{{ item.following_count |
+                        <span :class="item.gotFollowing ? 'following got' : 'following'"
+                            @click="viewFollow(item, 'following')">关注：{{ item.following_count |
                 formatNumber }}
                         </span>
                         <span>喜欢：{{ item.favoriting_count | formatNumber }}</span>
@@ -149,6 +159,7 @@ export default {
                 gender: null,
                 ip_location: null,
                 got: null,
+                followGot: null,
                 group: null
             },
             tableData: [],
@@ -161,10 +172,12 @@ export default {
                 layout: "total, sizes, prev, pager, next, jumper"//组件布局
             },
             genderLabel: [
+                { title: '全部', value: null },
                 { title: '男', value: 1 },
                 { title: '女', value: 2 },
             ],
             got_typeLabel: [
+                { title: '全部', value: null },
                 { title: '已采集', value: 'y' },
                 { title: '未采集', value: 'n' },
             ],
@@ -323,7 +336,13 @@ export default {
     created() {
         bus.$on('getUserInfo', value => {
             this.getUserList();
-        })
+        });
+        bus.$on('follower', value => {
+            this.getUserList();
+        });
+        bus.$on('following', value => {
+            this.getUserList();
+        });
     }
 }
 </script>
@@ -366,6 +385,10 @@ export default {
         .follower,
         .following {
             cursor: pointer;
+
+            &.got {
+                color: #ee08e8;
+            }
         }
 
         .check {

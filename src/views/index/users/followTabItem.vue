@@ -74,14 +74,29 @@
                     </template>
                 </el-table-column>
                 <el-table-column sortable prop="following_count" label="关注" align="center" width="70">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.following_count | formatNumber }}</span>
+                    </template>
                 </el-table-column>
                 <el-table-column sortable prop="follower_count" label="粉丝" align="center" width="70">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.follower_count | formatNumber }}</span>
+                    </template>
                 </el-table-column>
                 <el-table-column sortable prop="total_favorited" label="获赞" align="center" width="70">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.total_favorited | formatNumber }}</span>
+                    </template>
                 </el-table-column>
                 <el-table-column sortable  prop="aweme_count" label="作品" align="center" width="70">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.aweme_count | formatNumber }}</span>
+                    </template>
                 </el-table-column>
                 <el-table-column sortable prop="favoriting_count" label="喜欢" align="center" width="70">
+                    <template slot-scope="scope">
+                        <span>{{ scope.row.favoriting_count | formatNumber }}</span>
+                    </template>
                 </el-table-column>
                 <el-table-column sortable label="时间" align="center" min-width="150">
                     <template slot-scope="scope">

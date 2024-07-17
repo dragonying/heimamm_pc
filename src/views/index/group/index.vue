@@ -110,6 +110,7 @@ export default {
             },
             multipleSelection: [],
             got_typeLabel: [
+                { title: '全部', value: null },
                 { title: '已采集', value: 'y' },
                 { title: '未采集', value: 'n' },
             ],
