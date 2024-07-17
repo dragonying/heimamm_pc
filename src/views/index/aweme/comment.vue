@@ -112,7 +112,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" align="center" width="200">
+                <el-table-column label="操作" align="center" width="210">
                     <template slot-scope="scope">
                         <div class="opt">
                             <el-button size="mini" type="primary" @click="toDy(scope.row.sec_uid)">查看</el-button>
