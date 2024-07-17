@@ -1,6 +1,6 @@
 <template>
     <span class="follow">
-        <el-button :type="type" :size="size" @click="spider"  plain>{{ title }}</el-button>
+        <el-button :disabled="disabled" :type="type" :size="size" @click="spider"  plain>{{ title }}</el-button>
     </span>
 </template>
 
@@ -31,7 +31,12 @@ export default {
         },
         type: {
             required: false,
-        }
+        },
+        disabled: {
+            type: Boolean,
+            required: false,
+            default: false
+        },
     },
     data() {
         return {}

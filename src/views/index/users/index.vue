@@ -44,6 +44,8 @@
                 <el-button type="danger" size="mini" :disabled="!selectedRows.length" @click="multiDel">批量删除</el-button>
                 <el-button type="success" size="mini" :disabled="!selectedRows.length"
                     @click="multiUpdate">批量采集作品</el-button>
+                <follow title="批量采集TA的粉丝" :disabled="!selectedRows.length"  size="mini"  type="danger" :items="selectedRows" cmd="follower" />
+                <follow title="批量采集TA的关注" :disabled="!selectedRows.length"  size="mini"  type="danger" :items="selectedRows" cmd="following" />
             </div>
         </el-card>
         <el-card class="box-card table-box" v-loading="loading">
@@ -124,6 +126,7 @@ import userTask from '@/views/index/components/userTask'
 import shareTask from '@/views/index/components/shareTask'
 import followTab from '@/views/index/users/followTab'
 import WebSocketClientManager from '@/utils/WebSocketClientManager';
+import follow from '@/views/index/components/follow'
 import { mapState } from 'vuex'
 import bus from '@/utils/bus';
 const ws = WebSocketClientManager.getInstance();
@@ -135,7 +138,8 @@ export default {
         addGroup,
         userTask,
         shareTask,
-        followTab
+        followTab,
+        follow
     },
     data() {
         return {
