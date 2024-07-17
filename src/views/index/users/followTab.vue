@@ -1,6 +1,6 @@
 <template>
     <div class="followPan">
-        <el-drawer title="用户粉丝和关注列表" :visible.sync="showDialog" direction="ltr" size="90%">
+        <el-drawer title="用户粉丝和关注列表" :visible.sync="showDialog" direction="ltr" size="93%">
             <el-tabs v-model="activeName" @tab-click="handleClick">
                 <el-tab-pane label="粉丝" name="follower">
                     <followTabItem ref="follower" type="follower" />
@@ -62,9 +62,11 @@ export default {
 </script>
 <style lang="less" scoped>
 .followPan {
-   ::v-deep .el-drawer__body {
-        overflow: auto;
+    ::v-deep .el-drawer__body {
         padding: 0 10px;
+    }
+    ::v-deep .el-tabs__header{
+        margin: 0;
     }
 }
 </style>

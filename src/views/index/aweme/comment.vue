@@ -50,7 +50,7 @@
         </el-card>
 
         <el-card class="box-card table-box">
-            <el-table :data="tableData" size="small" style="width: 100%" @selection-change="handleSelectionChange"
+            <el-table :data="tableData" size="small" style="width: 100%" height="71vh" @selection-change="handleSelectionChange"
                 v-loading="loading">
                 <el-table-column type="selection" width="50">
                 </el-table-column>

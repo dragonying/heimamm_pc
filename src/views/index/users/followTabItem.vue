@@ -1,5 +1,5 @@
 <template>
-    <div class='comment-container'>
+    <div class='follow-container'>
         <el-card class="box-card search-box">
             <el-form :inline="true" :model="searchItem" ref="search" class="demo-form-inline">
                 <!-- <el-form-item label="aweme_id" prop='aweme_id'>
@@ -42,7 +42,7 @@
         </el-card>
 
         <el-card class="box-card table-box">
-            <el-table :data="tableData" size="small" style="width: 100%" @selection-change="handleSelectionChange"
+            <el-table :data="tableData" size="small" style="width: 100%" height="70vh" @selection-change="handleSelectionChange"
                 v-loading="loading">
                 <el-table-column type="selection" width="50">
                 </el-table-column>
@@ -88,7 +88,7 @@
                         <span>{{ scope.row.total_favorited | formatNumber }}</span>
                     </template>
                 </el-table-column>
-                <el-table-column sortable  prop="aweme_count" label="作品" align="center" width="70">
+                <el-table-column sortable prop="aweme_count" label="作品" align="center" width="70">
                     <template slot-scope="scope">
                         <span>{{ scope.row.aweme_count | formatNumber }}</span>
                     </template>
@@ -112,7 +112,7 @@
                         </div>
                     </template>
                 </el-table-column>
-                <el-table-column label="操作" align="center" width="200">
+                <el-table-column label="操作" align="center" width="210">
                     <template slot-scope="scope">
                         <div class="opt">
                             <el-button size="mini" type="primary" @click="toDy(scope.row.sec_uid)">查看</el-button>
@@ -141,7 +141,7 @@ import follow from '@/views/index/components/follow'
 const ws = WebSocketClientManager.getInstance();
 
 export default {
-    name: 'comment-list',
+    name: 'follow-list',
     //组件
     components: {
         addGroup,
@@ -157,7 +157,7 @@ export default {
     },
     data() {
         return {
-            user:null,
+            user: null,
             loading: false,
             searchItem: {
                 uid: null,
@@ -287,7 +287,7 @@ export default {
             })
         }
     },
-    created(){
+    created() {
         bus.$on(this.type, value => {
             this.clear();
         });
@@ -296,9 +296,9 @@ export default {
 </script>
 
 <style lang="less" scope>
-.comment-container {
+.follow-container {
     .search-box {
-        margin-bottom: 19px;
+        margin-bottom: 10px !important;
 
         .min-input {
             width: 100px;
