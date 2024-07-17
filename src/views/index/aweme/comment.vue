@@ -98,7 +98,7 @@
                             fit="cover" :preview-src-list="scope.row.image_list" lazy></el-image>
                     </template>
                 </el-table-column>
-                <el-table-column sortable label="评论时间" align="center" min-width="130">
+                <el-table-column sortable label="评论时间" align="center" min-width="150">
                     <template slot-scope="scope">
                         <span>{{ scope.row.create_time | formatDateTime }}</span>
                     </template>
