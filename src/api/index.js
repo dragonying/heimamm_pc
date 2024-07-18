@@ -25,3 +25,18 @@ export function browserConf(data = {}, callback = null) {
         data: data
     }, callback)
 }
+
+export function getImageList(data = {}, callback = null) {
+    return request({
+        url: '/getImageList',
+        method: 'post',
+        data: data
+    }, callback)
+}
+export function delImageList(data = {}, callback = null) {
+    return request({
+        url: '/delImageList',
+        method: 'post',
+        data: data
+    }, callback)
+}

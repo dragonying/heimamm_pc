@@ -307,8 +307,8 @@ export default {
         closeMsg() {
             this.msgVisible = false;
             this.msgForm.content = null;
-            this.commentVisible = false,
-                this.commentForm.content = null;
+            this.commentVisible = false;
+            this.commentForm.content = null;
         },
         deleteMsg(index) {
             this.form.msgOption.text.splice(index, 1);
@@ -347,8 +347,10 @@ export default {
 }
 
 .taskBody {
-    text-align: center;
     padding: 20px;
+    .dialog-footer{
+        text-align: center;
+    }
 }
 
 .taskForm {

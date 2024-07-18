@@ -1,6 +1,6 @@
 <template>
     <div class="followPan">
-        <el-drawer :title="user.nickname + '的粉丝和关注列表'" :visible.sync="showDialog" direction="ltr" size="93%">
+        <el-drawer :title="user ? user.nickname + '的粉丝和关注列表':''" :visible.sync="showDialog" direction="ltr" size="93%">
             <el-tabs v-model="activeName" @tab-click="handleClick">
                 <el-tab-pane label="粉丝" name="follower">
                     <followTabItem ref="follower" type="follower" />

@@ -1,5 +1,6 @@
 <template>
     <div class="uploadImg">
+        <imageList @selectImg="selectImg" @delImg="delImg" />
         <el-upload action="/uploads" list-type="picture-card" :file-list="files" auto-upload accept="image/*"
             :on-success="onSuccess">
             <i slot="default" class="el-icon-plus"></i>
@@ -21,6 +22,7 @@
     </div>
 </template>
 <script>
+import imageList from './imageList';
 export default {
     name: 'uploadImg',
     props: {
@@ -29,6 +31,9 @@ export default {
             require: false,
             default: []
         }
+    },
+    components: {
+        imageList
     },
     data() {
         return {
@@ -50,10 +55,18 @@ export default {
             const { data: { file } } = response;
             console.log(currentFile)
             this.files.push(currentFile);
+        },
+        selectImg({ url }) {
+            const o = url;
+            this.files.find(item => item.uid == o) ? this.$message.error('此图已添加') : this.files.push(({ uid: o, url: o, name: o, percentage: 100, response: { data: { file: o } } }));
+        },
+        delImg({ url }) {
+            let idx = this.files.findIndex(item => item.uid == url);
+            idx > -1 && this.files.splice(idx, 1);
         }
     },
     mounted() {
-        this.files = this.fileList.map(o => ({ uid: o, url: `${process.env.VUE_APP_BASEURL}${o}`, name: o, percentage: 100, response: { data: { file: o } } }))
+        this.files = this.fileList?.map(o => ({ uid: o, url: o, name: o, percentage: 100, response: { data: { file: o } } })) || [];
     }
 }
 </script>

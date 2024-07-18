@@ -57,9 +57,9 @@
                 <el-table-column prop="avatar" label="头像" align="center" width="80">
                     <template slot-scope="scope">
                         <el-popover placement="right" trigger="hover">
-                            <el-image style="width: 300px" :src="scope.row.avatar" fit="fit" lazy></el-image>
+                            <el-image style="width: 300px" :src="scope.row.avatar" fit="fit"></el-image>
                             <div class="avatarBox" slot="reference">
-                                <el-image class='avatar' :src="scope.row.avatar" fit="cover" lazy></el-image>
+                                <el-image class='avatar' :src="scope.row.avatar" fit="cover"></el-image>
                                 <i class="el-icon-s-opportunity" v-if="scope.row.got"></i>
                             </div>
                         </el-popover>
