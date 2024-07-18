@@ -21,6 +21,9 @@ Vue.filter('formatAge', v => {
 Vue.filter('formatGender', v => {
    return v == 1 ? '男' : v == 2 ? '女' : '未知';
 });
+Vue.filter('formatLocalImg', v => {
+   return `${process.env.VUE_APP_BASEURL}${v}`;
+});
 
 Vue.filter('formatNumber', v => {
    return v * 1 > 10000 ? (v * 1 / 10000).toFixed(2) + 'w' : v;

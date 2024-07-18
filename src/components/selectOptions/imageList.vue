@@ -7,9 +7,10 @@
                     <el-table-column prop="url" label="图片" align="center" width="150">
                         <template slot-scope="scope">
                             <el-popover placement="right" trigger="hover">
-                                <el-image style="width: 300px" :src="scope.row.url" fit="fit"></el-image>
+                                <el-image style="width: 300px" :src="scope.row.url | formatLocalImg"
+                                    fit="fit"></el-image>
                                 <div slot="reference">
-                                    <el-image class='pic' :src="scope.row.url" fit="cover"></el-image>
+                                    <el-image class='pic' :src="scope.row.url | formatLocalImg" fit="cover"></el-image>
                                 </div>
                             </el-popover>
                         </template>

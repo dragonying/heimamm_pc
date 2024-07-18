@@ -58,7 +58,7 @@ export default {
         },
         selectImg({ url }) {
             const o = url;
-            this.files.find(item => item.uid == o) ? this.$message.error('此图已添加') : this.files.push(({ uid: o, url: o, name: o, percentage: 100, response: { data: { file: o } } }));
+            this.files.find(item => item.uid == o) ? this.$message.error('此图已添加') : this.files.push(({ uid: o, url: `${process.env.VUE_APP_BASEURL}${o}`, name: o, percentage: 100, response: { data: { file: o } } }));
         },
         delImg({ url }) {
             let idx = this.files.findIndex(item => item.uid == url);
@@ -66,7 +66,7 @@ export default {
         }
     },
     mounted() {
-        this.files = this.fileList?.map(o => ({ uid: o, url: o, name: o, percentage: 100, response: { data: { file: o } } })) || [];
+        this.files = this.fileList?.map(o => ({ uid: o, url: `${process.env.VUE_APP_BASEURL}${o}`, name: o, percentage: 100, response: { data: { file: o } } })) || [];
     }
 }
 </script>
