@@ -27,6 +27,20 @@
           </div>
           <p class="title">评论数据</p>
         </li>
+        <li class="pure">
+          <div class="dt">
+            <span>{{ dataStatic.followerDataLength }}条</span>
+            <span>{{ dataStatic.followerDataSize | formatFileSize }}</span>
+          </div>
+          <p class="title">粉丝数据</p>
+        </li>
+        <li class="pure">
+          <div class="dt">
+            <span>{{ dataStatic.followingDataLength }}条</span>
+            <span>{{ dataStatic.followingDataSize | formatFileSize }}</span>
+          </div>
+          <p class="title">关注数据</p>
+        </li>
         <li class="green">
           <div class="dt">
             <span>{{ dataStatic.downDataLength }}条</span>
@@ -85,9 +99,10 @@ export default {
 
 <style lang="less">
 .chart-container {
-  .dt{
+  .dt {
     cursor: pointer;
   }
+
   .group-data {
     display: flex;
     align-items: center;
@@ -159,6 +174,15 @@ export default {
 
         .dt {
           border-color: #0086fa;
+        }
+      }
+
+      &.pure {
+
+        color: #5128a3;
+
+        .dt {
+          border-color: #5128a3;
         }
       }
 
@@ -234,3 +258,4 @@ export default {
   }
 }
 </style>
+
