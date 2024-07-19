@@ -13,6 +13,7 @@
                 </el-form-item>
                 <el-form-item label="用户组" prop="group">
                     <el-select class='middle-input' v-model="searchItem.group">
+                        <el-option  label="全部" :value="null" :key="null"></el-option>
                         <el-option v-for="itm in options" :label="itm" :value="itm" :key="itm.value"></el-option>
                     </el-select>
                 </el-form-item>
@@ -98,7 +99,8 @@ export default {
             loading: false,
             searchItem: {
                 nickname: null,
-                group: null
+                group: null,
+                got:null
             },
             tableData: [],
             page: {
