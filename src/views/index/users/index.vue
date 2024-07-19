@@ -350,7 +350,7 @@ export default {
 <style lang="less">
 .user-container {
     .search-box {
-        margin-bottom: 19px;
+        margin-bottom: 10px;
 
         .min-input {
             width: 100px;
@@ -373,6 +373,8 @@ export default {
     .user-card {
         display: flex;
         flex-wrap: wrap;
+        height: calc(100vh - 358px);
+        overflow: auto;
     }
 
     .userBox {

@@ -32,7 +32,7 @@
 
         <el-card class="box-card table-box">
             <el-table :data="tableData" size="small" style="width: 100%" @selection-change="handleSelectionChange"
-                v-loading="loading">
+                v-loading="loading" :height="tableHeight">
                 <el-table-column type="selection" width="50">
                 </el-table-column>
                 <el-table-column prop="avatar" label="头像" align="center" width="80">
@@ -99,6 +99,7 @@ export default {
     data() {
         return {
             loading: false,
+            tableHeight:'71vh',
             searchItem: {
                 nickname: null,
                 group: null,
@@ -241,7 +242,7 @@ export default {
 <style lang="less" scope>
 .group-container {
     .search-box {
-        margin-bottom: 19px;
+        margin-bottom: 10px;
 
         .min-input {
             width: 100px;

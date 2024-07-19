@@ -15,7 +15,7 @@
 
         <el-card class="box-card table-box">
             <el-table :data="tableData" size="small" style="width: 100%" @selection-change="handleSelectionChange"
-                v-loading="loading">
+                v-loading="loading" :height="tableHeight">
                 <el-table-column type="selection" width="50">
                 </el-table-column>
                 <el-table-column prop="aweme_id" label="作品ID" width="200">
@@ -80,6 +80,7 @@ export default {
     data() {
         return {
             loading: false,
+            tableHeight:'71vh',
             searchItem: {
                 desc: null
             },
@@ -204,7 +205,7 @@ export default {
 <style lang="less" scope>
 .download-container {
     .search-box {
-        margin-bottom: 19px;
+        margin-bottom: 10px;
 
         .min-input {
             width: 100px;

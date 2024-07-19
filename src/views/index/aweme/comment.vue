@@ -50,7 +50,7 @@
         </el-card>
 
         <el-card class="box-card table-box">
-            <el-table :data="tableData" size="small" style="width: 100%" height="71vh" @selection-change="handleSelectionChange"
+            <el-table :data="tableData" size="small" style="width: 100%" :height="tableHeight" @selection-change="handleSelectionChange"
                 v-loading="loading">
                 <el-table-column type="selection" width="50">
                 </el-table-column>
@@ -148,6 +148,7 @@ export default {
     data() {
         return {
             loading: false,
+            tableHeight:'71vh',
             searchItem: {
                 aweme_id: null,
                 nickname: null,
@@ -283,7 +284,7 @@ export default {
 <style lang="less" scope>
 .comment-container {
     .search-box {
-        margin-bottom: 19px;
+        margin-bottom: 10px;
 
         .min-input {
             width: 100px;

@@ -291,7 +291,9 @@ export default {
 <style lang="less">
 .index-container {
     height: 100%;
-
+    .el-container {
+        overflow: auto;
+    }
     //头部
     .header {
         height: 60px;
@@ -349,6 +351,7 @@ export default {
     .main {
         background-color: #e8e9ec;
         box-shadow: inset 1px 0px 5px 1px #cac6c6;
+        padding: 10px;
     }
 
     ::-webkit-scrollbar {

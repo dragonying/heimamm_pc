@@ -441,7 +441,7 @@ export default {
 <style lang="less">
 .user-container {
     .search-box {
-        margin-bottom: 19px;
+        margin-bottom: 10px;
 
         .min-input {
             width: 100px;

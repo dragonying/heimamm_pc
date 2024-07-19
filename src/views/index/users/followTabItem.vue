@@ -298,7 +298,7 @@ export default {
 <style lang="less" scope>
 .follow-container {
     .search-box {
-        margin-bottom: 10px !important;
+        margin-bottom: 10px;
 
         .min-input {
             width: 100px;
