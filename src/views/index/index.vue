@@ -16,6 +16,7 @@
                 <el-button size="small" type="success" icon="el-icon-setting" @click="browserSet">浏览器设置</el-button>
                 <el-button size="small" type="danger" icon="el-icon-delete-solid"
                     @click="clearBrowser">清空浏览器</el-button>
+                <el-button size="small" type="primary" icon="el-icon-full-screen" @click="toggleFullScreen">全屏</el-button>
                 <!-- <el-button size="small" type="primary" icon="el-icon-warning" @click="logOut">退出</el-button> -->
             </div>
         </el-header>
@@ -150,11 +151,11 @@ export default {
             ],
             browserForm: {
                 headless: false,
-                absorbMediaRequest:false,
+                absorbMediaRequest: false,
                 width: 1000,
                 height: 800,
                 timeout: 60000,
-                defaultWait:3000
+                defaultWait: 3000
             },
             loginForm: {
                 code: null
@@ -237,6 +238,36 @@ export default {
                 WebSocketClientManager.getInstance().sendMessage({ cmd: 'clearBrowser' });
             })
         },
+        toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                this.enterFullScreen();
+            } else {
+                this.exitFullScreen();
+            }
+        },
+        enterFullScreen() {
+            let element = document.documentElement;
+            if (element.requestFullscreen) {
+                element.requestFullscreen();
+            } else if (element.mozRequestFullScreen) { /* Firefox */
+                element.mozRequestFullScreen();
+            } else if (element.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+                element.webkitRequestFullscreen();
+            } else if (element.msRequestFullscreen) { /* IE/Edge */
+                element.msRequestFullscreen();
+            }
+        },
+        exitFullScreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) { /* Firefox */
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { /* IE/Edge */
+                document.msExitFullscreen();
+            }
+        }
     },
     created() {
         bus.$on('openLog', value => {
@@ -267,7 +298,7 @@ export default {
                     if (!type) {
                         const { cmd, msg, type, isProgress } = data;
                         if (isProgress) {
-                            this.percentage = msg*1;
+                            this.percentage = msg * 1;
                         } else {
                             this.logs.push(data);
                             this.$refs.console.scrollBy(0, this.$refs.console.scrollHeight);
@@ -291,9 +322,11 @@ export default {
 <style lang="less">
 .index-container {
     height: 100%;
+
     .el-container {
         overflow: auto;
     }
+
     //头部
     .header {
         height: 60px;
