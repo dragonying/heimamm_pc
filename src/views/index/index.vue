@@ -76,6 +76,11 @@
                     <el-input-number v-model="browserForm.timeout" :min="1000" :step="100"></el-input-number>
                     <span>毫秒</span>
                 </el-form-item>
+                <el-form-item label="等待时间" prop="defaultWait">
+                    <el-input-number v-model="browserForm.defaultWait" :min="2000" :step="100"></el-input-number>
+                    <span>毫秒</span>
+                    <tip content="模拟人工操作的点击间隔时间，建议大于2000毫秒" />
+                </el-form-item>
                 <el-form-item label="无头模式" prop="headless">
                     <el-switch v-model="browserForm.headless"></el-switch>
                     <tip content="无头模式：不会唤起浏览器窗口。为了更好的体验，建议不开启" />
@@ -148,7 +153,8 @@ export default {
                 absorbMediaRequest:false,
                 width: 1000,
                 height: 800,
-                timeout: 60000
+                timeout: 60000,
+                defaultWait:3000
             },
             loginForm: {
                 code: null
