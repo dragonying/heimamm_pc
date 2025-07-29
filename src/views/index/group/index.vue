@@ -13,7 +13,7 @@
                 </el-form-item>
                 <el-form-item label="用户组" prop="group">
                     <el-select class='middle-input' v-model="searchItem.group">
-                        <el-option  label="全部" :value="null" :key="null"></el-option>
+                        <el-option label="全部" :value="null" :key="null"></el-option>
                         <el-option v-for="itm in options" :label="itm" :value="itm" :key="itm.value"></el-option>
                     </el-select>
                 </el-form-item>
@@ -35,20 +35,59 @@
                 v-loading="loading" :height="tableHeight">
                 <el-table-column type="selection" width="50">
                 </el-table-column>
-                <el-table-column prop="avatar" label="头像" align="center" width="80">
+                <el-table-column prop="avatar" label="头像" align="center" width="300">
                     <template slot-scope="scope">
-                        <el-popover placement="right" trigger="hover">
-                            <el-image style="width: 300px" :src="scope.row.avatar" fit="fit"></el-image>
-                            <div class="avatarBox" slot="reference">
-                                <el-image class='avatar' :src="scope.row.avatar" fit="cover"></el-image>
-                                <i class="el-icon-s-opportunity" v-if="scope.row.got"></i>
+                        <div class="avatarReact">
+                            <div class="avatarContent">
+                                <el-popover placement="right" trigger="hover">
+                                    <el-image style="width: 300px" :src="scope.row.avatar" fit="fit"></el-image>
+                                    <div class="avatarBox" slot="reference">
+                                        <el-image class='avatar' :src="scope.row.avatar" fit="cover"></el-image>
+                                        <i class="el-icon-s-opportunity" v-if="scope.row.got"></i>
+                                    </div>
+                                </el-popover>
+                                <div class="info">
+                                    <p>昵称:{{ scope.row.nickname }}</p>
+                                    <p>uid:{{ scope.row.uid }}</p>
+                                    <p>籍贯: {{ scope.row.province }} {{ scope.row.city }}</p>
+                                    <p>IP归属:{{ scope.row.ip_location }}</p>
+                                </div>
                             </div>
-                        </el-popover>
+                            <p class="signature">签名：{{ scope.row.signature }}</p>
+                        </div>
+
+
                     </template>
                 </el-table-column>
-                <el-table-column prop="uid" label="uid" align="center" width="200">
+                <el-table-column prop="follower_count" label="粉丝">
+                    <template slot-scope="scope">
+                        {{ scope.row.follower_count | formatNumber }}
+                    </template>
                 </el-table-column>
-                <el-table-column prop="nickname" label="昵称" min-width="200">
+                <el-table-column prop="total_favorited" label="获赞">
+                    <template slot-scope="scope">
+                        {{ scope.row.total_favorited | formatNumber }}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="favoriting_count" label="喜欢">
+                    <template slot-scope="scope">
+                        {{ scope.row.favoriting_count | formatNumber }}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="aweme_count" label="作品">
+                    <template slot-scope="scope">
+                        {{ scope.row.aweme_count | formatNumber }}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="gender" label="性别">
+                    <template slot-scope="scope">
+                        {{ scope.row.gender | formatGender }}
+                    </template>
+                </el-table-column>
+                <el-table-column prop="user_age" label="年龄">
+                    <template slot-scope="scope">
+                        {{ scope.row.user_age | formatAge }}
+                    </template>
                 </el-table-column>
                 <el-table-column prop="groups" label="用户组" min-width="200">
                     <template slot-scope="scope">
@@ -99,11 +138,11 @@ export default {
     data() {
         return {
             loading: false,
-            tableHeight:'71vh',
+            tableHeight: '71vh',
             searchItem: {
                 nickname: null,
                 group: null,
-                got:null
+                got: null
             },
             tableData: [],
             page: {
@@ -272,6 +311,28 @@ export default {
         -webkit-line-clamp: 2;
         /*自定义行数*/
     }
+
+    .avatarReact {
+        .signature{
+            text-align: left;
+        }
+        .avatarContent {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            .info {
+                flex: 1;
+                display: flex;
+                padding-left: 10px;
+                text-align: left;
+                flex-wrap: wrap;
+                p{
+                    width: 50%;
+                }
+            }
+        }
+    }
+
 
     .avatarBox {
         position: relative;

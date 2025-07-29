@@ -16,10 +16,10 @@ Vue.filter('filterTag', v => {
    return v.replace(/<.*?>/g, "");
 });
 Vue.filter('formatAge', v => {
-   return v * 1 < 0 ? '' : `${v}岁`;
+   return v * 1 < 0 || !v ? '' : `${v}岁`;
 });
 Vue.filter('formatGender', v => {
-   return v == 1 ? '男' : v == 2 ? '女' : '未知';
+   return v == 1 ? '男' : v == 2 ? '女' : '';
 });
 Vue.filter('formatLocalImg', v => {
    return `${process.env.VUE_APP_BASEURL}${v}`;
