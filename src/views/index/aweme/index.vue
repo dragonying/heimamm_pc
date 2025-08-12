@@ -285,9 +285,10 @@ export default {
         },
         getComment(item) {
             bus.$emit('openLog');
-            const { aweme_id, media_type, shareLink } = item;
+            const { aweme_id, media_type, shareLink,sec_uid } = item;
             this.$nextTick(() => {
-                ws.sendMessage({ cmd: 'getComment', content: shareLink ? shareLink : `${process.env.VUE_APP_DOUYIN_HOST}/${media_type == 4 ? 'video' : 'note'}/${aweme_id}` });
+                // ws.sendMessage({ cmd: 'getComment', content: shareLink ? shareLink : `${process.env.VUE_APP_DOUYIN_HOST}/${media_type == 4 ? 'video' : 'note'}/${aweme_id}` });
+                ws.sendMessage({ cmd: 'getComment', content: shareLink ? shareLink : `${process.env.VUE_APP_DOUYIN_HOST}/${media_type == 4 ? `user/${sec_uid}?modal_id=` : 'note/'}${aweme_id}` });
             })
         },
         multiUpdate() {
@@ -319,7 +320,7 @@ export default {
             })
         },
         multiDel() {
-            this.delAweme(this.selectedRows);
+            this.delAweme(this.selectedRows.map(o=>o.aweme_id));
         },
         closeCHandler() {
             this.showCDialog = false;
