@@ -293,8 +293,8 @@ export default {
         },
         multiUpdate() {
             const contents = this.selectedRows.map(item => {
-                const { media_type, aweme_id } = item;
-                return media_type ? `${process.env.VUE_APP_DOUYIN_HOST}/${media_type == 4 ? 'video' : 'note'}/${aweme_id}` : false;
+                const { media_type, aweme_id,sec_uid } = item;
+                return media_type ? `${process.env.VUE_APP_DOUYIN_HOST}/${media_type == 4 ? `user/${sec_uid}?modal_id=` : 'note/'}${aweme_id}` : false;
             }).filter(Boolean);
             if (contents.length) {
                 bus.$emit('openLog');
