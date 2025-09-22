@@ -65,6 +65,10 @@
         </el-dialog>
         <el-dialog title="浏览器设置" :visible.sync="browserVisible" center width="40%" :before-close="handleCloseBrowser">
             <el-form class="browserForm" :model="browserForm" :rules="rules" ref='browserForm' label-width="100px">
+                <el-form-item label="浏览器路径" prop="executablePath">
+                    <el-input v-model="browserForm.executablePath" class="small"></el-input>
+                    <tip content="配置浏览器的执行路径，不填则使用默认的Chromium" />
+                </el-form-item>
                 <el-form-item label="浏览器宽度" prop="width">
                     <el-input-number v-model="browserForm.width" :min="100" :step="1"></el-input-number>
                     <span>PX</span>
@@ -155,7 +159,8 @@ export default {
                 width: 1000,
                 height: 800,
                 timeout: 60000,
-                defaultWait: 3000
+                defaultWait: 3000,
+                executablePath:null
             },
             loginForm: {
                 code: null
@@ -475,6 +480,9 @@ export default {
 
         .el-input-number {
             margin-right: 10px;
+        }
+        .el-input.small{
+            width: 70%;
         }
     }
 
